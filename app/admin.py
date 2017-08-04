@@ -30,6 +30,8 @@ class AppAdmin(admin.ModelAdmin):
     def get_ordering(self, request):
         return ['name']
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        pass
 
 admin.site.register(System, SystemAdmin)
 admin.site.register(Category, CategoryAdmin)
