@@ -13,3 +13,24 @@ We're going to create a simple API to allow admin users to view and edit the use
 * djangorestframework
 * markdown
 * django-filter
+
+# A-line-Shell
+cmdline help
+```
+# init project
+django-admin.py startproject project
+django-admin.py startapp app
+cd ..
+
+# init database 
+python3.6 manage.py migrate
+python3.6 manage.py createsuperuser
+
+
+# reinit database
+python3.6 manage.py makemigrations
+python3.6 manage.py migrate
+
+# run
+python3.6 manage.py runserver 0.0.0.0:8000
+```
