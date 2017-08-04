@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import System, Category
+from .models import System, Category, App
 
 
 class SystemAdmin(admin.ModelAdmin):
@@ -10,7 +10,7 @@ class SystemAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     def get_ordering(self, request):
-        return ['id']
+        return ['name']
 
 class CategoryAdmin(admin.ModelAdmin):
     fields = ['name']
@@ -19,8 +19,18 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
     def get_ordering(self, request):
-        return ['id']
+        return ['name']
+
+class AppAdmin(admin.ModelAdmin):
+    fields = ['name', 'category_id', 'system_id', 'key', 'secret', 'rsa']
+    list_display = ('name', 'category_id', 'system_id', 'key', 'secret', 'rsa')
+    list_filter = ['name', 'category_id', 'system_id']
+    search_fields = ['name']
+
+    def get_ordering(self, request):
+        return ['name']
 
 
 admin.site.register(System, SystemAdmin)
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(App, AppAdmin)
