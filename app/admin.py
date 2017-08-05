@@ -30,9 +30,6 @@ class AppAdmin(admin.ModelAdmin):
     def get_ordering(self, request):
         return ['name']
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        pass
-
 class VersionAdmin(admin.ModelAdmin):
     fields = ['name', 'app_id']
     list_display = ('name', 'app_id', 'create_time')
@@ -52,9 +49,9 @@ class PatchAdmin(admin.ModelAdmin):
         return ['serial_number']
 
 class ReleaseAdmin(admin.ModelAdmin):
-    fields = ['version_id', 'patch_id', 'is_enable']
-    list_display = ('version_id', 'patch_id', 'is_enable')
-    list_filter = ['version_id', 'patch_id', 'is_enable']
+    fields = ['version_id', 'patch_id', 'is_enable', 'update_time']
+    list_display = ('version_id', 'patch_id', 'is_enable', 'create_time', 'update_time')
+    list_filter = ['version_id', 'patch_id', 'is_enable', 'create_time', 'update_time']
     search_fields = ['name']
 
 admin.site.register(System, SystemAdmin)
