@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import System, Category, App
+from .models import System, Category, App, Version, Patch, Release
 
 
 class SystemAdmin(admin.ModelAdmin):
@@ -33,6 +33,33 @@ class AppAdmin(admin.ModelAdmin):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         pass
 
+class VersionAdmin(admin.ModelAdmin):
+    fields = ['name', 'app_id']
+    list_display = ('name', 'app_id', 'create_time')
+    list_filter = ['name', 'app_id', 'create_time']
+    search_fields = ['name']
+
+    def get_ordering(self, request):
+        return ['name']
+
+class PatchAdmin(admin.ModelAdmin):
+    fields = ['serial_number', 'version_id', 'size', 'desc']
+    list_display = ('serial_number', 'version_id', 'size', 'desc', 'upload_time')
+    list_filter = ['size', 'upload_time']
+    search_fields = ['serial_number']
+
+    def get_ordering(self, request):
+        return ['serial_number']
+
+class ReleaseAdmin(admin.ModelAdmin):
+    fields = ['version_id', 'patch_id', 'is_enable']
+    list_display = ('version_id', 'patch_id', 'is_enable')
+    list_filter = ['version_id', 'patch_id', 'is_enable']
+    search_fields = ['name']
+
 admin.site.register(System, SystemAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(App, AppAdmin)
+admin.site.register(Version, VersionAdmin)
+admin.site.register(Patch, PatchAdmin)
+admin.site.register(Release, ReleaseAdmin)
