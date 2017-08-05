@@ -17,6 +17,9 @@ HitFix patch manager
 * djangorestframework
 * markdown
 * django-filter
+* pygments
+* coreapi
+
 
 # A-line-Shell
 cmdline help
