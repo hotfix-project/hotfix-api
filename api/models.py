@@ -34,7 +34,7 @@ class Version(models.Model):
     id = models.AutoField(primary_key=True)
     app_id = models.ForeignKey(App)  
     name = models.CharField(max_length=1024, null=False)
-    create_time = models.DateTimeField(auto_now=True)
+    create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):  
         return self.name
@@ -55,8 +55,8 @@ class Patch(models.Model):
 class Release(models.Model):
     id = models.AutoField(primary_key=True)
     patch_id = models.ForeignKey(Patch)  
-    create_time = models.DateTimeField(auto_now=True)
-    update_time = models.DateTimeField(default=datetime.datetime.now)
+    create_time = models.DateTimeField(auto_now_add=True)
+    update_time = models.DateTimeField(auto_now=True)
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
     is_enable = models.BooleanField(default=False)

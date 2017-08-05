@@ -36,6 +36,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Release
         fields = (
-            'id', 'patch_id', 'is_enable', 'update_time', 
-            'download_count', 'apply_count', 'is_gray', 'pool_size'
+            'id', 'patch_id', 'is_enable', 
+            'download_count', 'apply_count',
+            'is_gray', 'pool_size'
         )

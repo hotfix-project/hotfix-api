@@ -61,8 +61,8 @@ class PatchAdmin(admin.ModelAdmin):
         return ['serial_number']
 
 class ReleaseAdmin(admin.ModelAdmin):
-    fields = ['patch_id', 'is_enable', 'update_time', 'download_count', 'apply_count', 'is_gray', 'pool_size']
-    list_display = ('patch_id', 'is_enable', 'is_gray', 'create_time')
+    fields = ['patch_id', 'is_enable', 'download_count', 'apply_count', 'is_gray', 'pool_size']
+    list_display = ('patch_id', 'is_enable', 'is_gray', 'create_time', 'update_time')
     list_filter = [
         'patch_id__serial_number',
         'is_enable', 
