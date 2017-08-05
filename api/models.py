@@ -24,7 +24,7 @@ class App(models.Model):
     name = models.CharField(max_length=1024, null=False)
     key = models.CharField(max_length=1024, null=False)
     secret = models.CharField(max_length=1024, null=False)
-    rsa = models.CharField(max_length=1024, null=False)
+    rsa = models.TextField(null=False)
 
     def __str__(self):  
         return self.name
@@ -48,7 +48,7 @@ class Patch(models.Model):
     desc = models.CharField(max_length=1024, null=False)
     upload_time = models.DateTimeField(auto_now=True)
     local_url = models.FileField(upload_to='./upload/', blank=True)
-    remote_url = models.CharField(max_length=1024, null=True)
+    remote_url = models.URLField(default='')
 
     def __str__(self):  
         return str(self.serial_number)
