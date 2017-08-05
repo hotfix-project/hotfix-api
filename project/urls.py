@@ -17,9 +17,11 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
 from api import views
+from rest_framework_swagger.views import get_swagger_view
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'categorys', views.CategoryViewSet)
 router.register(r'systems', views.SystemViewSet)
 router.register(r'apps', views.AppViewSet)
@@ -27,9 +29,12 @@ router.register(r'versions', views.VersionViewSet)
 router.register(r'patchs', views.PatchViewSet)
 router.register(r'releases', views.ReleaseViewSet)
 
+schema_view = get_swagger_view(title='Hotfix API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^hotfix/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^docs/', include_docs_urls(title='Hotfix API')),
+    url(r'^$', schema_view),
 ]

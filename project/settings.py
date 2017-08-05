@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'api',
     'rest_framework',
+    'rest_framework_swagger',
 ]
 
 MIDDLEWARE = [
@@ -138,3 +139,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10
 }
+
+LOGIN_URL = '/api-auth/login/'
+LOGOUT_URL = '/api-auth/logout/'

@@ -19,6 +19,7 @@ HitFix patch manager
 * django-filter
 * pygments
 * coreapi
+* django-rest-swagger
 
 
 # A-line-Shell
