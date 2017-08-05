@@ -35,3 +35,6 @@ python3.6 manage.py showmigrations
 # run
 python3.6 manage.py runserver 0.0.0.0:8000
 ```
+
+# TODO
+1. Automatically distribute patch files, sync to release.remote\_url

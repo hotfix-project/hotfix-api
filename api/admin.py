@@ -48,7 +48,7 @@ class VersionAdmin(admin.ModelAdmin):
         return ['name']
 
 class PatchAdmin(admin.ModelAdmin):
-    fields = ['serial_number', 'version_id', 'size', 'desc', 'download_url']
+    fields = ['serial_number', 'version_id', 'size', 'desc', 'local_url', 'remote_url']
     list_display = ('serial_number', 'version_id', 'size', 'desc', 'upload_time')
     list_filter = [
         'version_id__name',

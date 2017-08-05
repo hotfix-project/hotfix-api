@@ -29,7 +29,7 @@ class VersionSerializer(serializers.HyperlinkedModelSerializer):
 class PatchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Patch
-        fields = ('id', 'version_id', 'serial_number', 'size', 'desc', 'download_url', 'upload_time')
+        fields = ('id', 'version_id', 'serial_number', 'size', 'desc', 'local_url', 'remote_url', 'upload_time')
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
