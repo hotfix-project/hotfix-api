@@ -47,8 +47,7 @@ class Patch(models.Model):
     size = models.IntegerField(default=0)
     desc = models.CharField(max_length=1024, null=False)
     upload_time = models.DateTimeField(auto_now=True)
-    local_url = models.FileField(upload_to='./upload/', blank=True)
-    remote_url = models.URLField(default='')
+    download_url = models.URLField(default="http://")
 
     def __str__(self):  
         return str(self.serial_number)
