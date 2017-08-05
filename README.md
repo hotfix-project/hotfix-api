@@ -5,6 +5,7 @@ HitFix patch manager
 We're going to create a simple API to allow admin users to view and edit the users and groups in the system.
 
 [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
+[Django Modle FieldType](https://docs.djangoproject.com/en/1.11/ref/models/fields/)
 
 # Requirements
 * Python 3.6+
