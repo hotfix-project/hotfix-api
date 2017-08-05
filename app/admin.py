@@ -49,9 +49,9 @@ class PatchAdmin(admin.ModelAdmin):
         return ['serial_number']
 
 class ReleaseAdmin(admin.ModelAdmin):
-    fields = ['version_id', 'patch_id', 'is_enable', 'update_time']
-    list_display = ('version_id', 'patch_id', 'is_enable', 'create_time', 'update_time')
-    list_filter = ['version_id', 'patch_id', 'is_enable', 'create_time', 'update_time']
+    fields = ['version_id', 'patch_id', 'is_enable', 'update_time', 'download_count', 'apply_count', 'is_gray', 'pool_size']
+    list_display = ('version_id', 'patch_id', 'is_enable', 'is_gray', 'create_time')
+    list_filter = ['version_id', 'patch_id', 'is_enable', 'is_gray', 'create_time']
     search_fields = ['name']
 
 admin.site.register(System, SystemAdmin)

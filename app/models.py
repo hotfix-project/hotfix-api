@@ -56,7 +56,11 @@ class Release(models.Model):
     patch_id = models.ForeignKey(Patch)  
     create_time = models.DateTimeField(auto_now=True)
     update_time = models.DateTimeField(default=datetime.datetime.now)
-    is_enable = models.BooleanField()
+    download_count = models.IntegerField(default=0)
+    apply_count = models.IntegerField(default=0)
+    is_enable = models.BooleanField(default=False)
+    is_gray = models.BooleanField(default=False)
+    pool_size = models.IntegerField(default=0)
 
     def __str__(self):  
         return str(self.id)
