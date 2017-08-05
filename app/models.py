@@ -52,7 +52,6 @@ class Patch(models.Model):
 
 class Release(models.Model):
     id = models.AutoField(primary_key=True)
-    version_id = models.ForeignKey(Version)  
     patch_id = models.ForeignKey(Patch)  
     create_time = models.DateTimeField(auto_now=True)
     update_time = models.DateTimeField(default=datetime.datetime.now)
