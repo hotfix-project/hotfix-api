@@ -1,11 +1,14 @@
 # HotFix
 HitFix patch manager
 
-# Tutorial
-We're going to create a simple API to allow admin users to view and edit the users and groups in the system.
+# Design
+1. Restful API 
+2. Web-apps
+3. Using external storage services
 
-[Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
-[Django Modle FieldType](https://docs.djangoproject.com/en/1.11/ref/models/fields/)
+# Ref
+* [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
+* [Django Modle FieldType](https://docs.djangoproject.com/en/1.11/ref/models/fields/)
 
 # Requirements
 * Python 3.6+
