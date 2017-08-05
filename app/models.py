@@ -29,6 +29,7 @@ class App(models.Model):
     def __str__(self):  
         return self.name
 
+
 class Version(models.Model):
     id = models.AutoField(primary_key=True)
     app_id = models.ForeignKey(App)  

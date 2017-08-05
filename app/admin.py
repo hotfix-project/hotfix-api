@@ -33,7 +33,7 @@ class AppAdmin(admin.ModelAdmin):
 class VersionAdmin(admin.ModelAdmin):
     fields = ['name', 'app_id']
     list_display = ('name', 'app_id', 'create_time')
-    list_filter = ['name', 'app_id', 'create_time']
+    list_filter = ['name', 'app_id__name', 'create_time']
     search_fields = ['name']
 
     def get_ordering(self, request):
@@ -42,7 +42,7 @@ class VersionAdmin(admin.ModelAdmin):
 class PatchAdmin(admin.ModelAdmin):
     fields = ['serial_number', 'version_id', 'size', 'desc']
     list_display = ('serial_number', 'version_id', 'size', 'desc', 'upload_time')
-    list_filter = ['size', 'upload_time', 'version_id']
+    list_filter = ['size', 'upload_time', 'version_id__name']
     search_fields = ['serial_number']
 
     def get_ordering(self, request):
@@ -52,7 +52,7 @@ class ReleaseAdmin(admin.ModelAdmin):
     fields = ['patch_id', 'is_enable', 'update_time', 'download_count', 'apply_count', 'is_gray', 'pool_size']
     list_display = ('patch_id', 'is_enable', 'is_gray', 'create_time')
     list_filter = [
-        'patch_id', 
+        'patch_id__serial_number', 
         'is_enable', 
         'is_gray', 
         'create_time',
