@@ -1,0 +1,25 @@
+--- old/documentation.py	2017-08-06 08:33:41.854508631 +0800
++++ new/documentation.py	2017-08-06 08:34:43.714506830 +0800
+@@ -1,4 +1,6 @@
+ from django.conf.urls import include, url
++from django.contrib.auth.decorators import login_required
++from django.conf import settings
+ 
+ 
+ from rest_framework.renderers import (
+@@ -50,6 +52,7 @@
+         patterns=patterns,
+         generator_class=generator_class,
+     )
++    docs_view = login_required(docs_view, login_url=getattr(settings, 'LOGIN_URL', None))
+     schema_js_view = get_schemajs_view(
+         title=title,
+         description=description,
+@@ -58,6 +61,7 @@
+         patterns=patterns,
+         generator_class=generator_class,
+     )
++    schema_js_view = login_required(schema_js_view, login_url=getattr(settings, 'LOGIN_URL', None))
+     urls = [
+         url(r'^$', docs_view, name='docs-index'),
+         url(r'^schema.js$', schema_js_view, name='schema-js')
