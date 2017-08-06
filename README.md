@@ -47,3 +47,9 @@ python3.6 manage.py runserver 0.0.0.0:8000
 #TODO
 * ratelimit
   https://djangopackages.org/packages/p/django-ratelimit/
+* client workflow
+1. checkout update
+  param: app\_version,key,sign,
+  return: rsa,downloada\_url
+2. download patch
+3. report update status
