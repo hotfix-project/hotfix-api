@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Max
 import datetime
 
 # Create your models here.
@@ -43,18 +44,18 @@ class Version(models.Model):
 class Patch(models.Model):
     id = models.AutoField(primary_key=True)
     version_id = models.ForeignKey(Version)  
-    serial_number = models.IntegerField(default=0)
-    size = models.IntegerField(default=0)
+    size = models.IntegerField(null=False)
     desc = models.CharField(max_length=1024, null=False)
     upload_time = models.DateTimeField(auto_now=True)
-    download_url = models.URLField(default="http://")
+    download_url = models.URLField(null=False)
 
     def __str__(self):  
-        return str(self.serial_number)
+        return str(self.id)
 
 class Release(models.Model):
     id = models.AutoField(primary_key=True)
     patch_id = models.ForeignKey(Patch)  
+    serial_number = models.IntegerField(default=0)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     download_count = models.IntegerField(default=0)
@@ -65,3 +66,12 @@ class Release(models.Model):
 
     def __str__(self):  
         return str(self.id)
+
+    def save(self, *args, **kw):
+        if self.is_enable:
+            releases = Release.objects.filter(patch_id=self.patch_id.id)
+            releases.update(is_enable=False)
+            result = releases.aggregate(number=Max('serial_number'))
+            self.serial_number = result["number"] + 1
+            self.is_enable = True
+        super(Release, self).save(*args, **kw)

@@ -48,8 +48,8 @@ class VersionAdmin(admin.ModelAdmin):
         return ['name']
 
 class PatchAdmin(admin.ModelAdmin):
-    fields = ['serial_number', 'version_id', 'size', 'desc', 'download_url']
-    list_display = ('serial_number', 'version_id', 'size', 'desc', 'upload_time')
+    fields = ['version_id', 'size', 'desc', 'download_url']
+    list_display = ('version_id', 'size', 'desc', 'upload_time')
     list_filter = [
         'version_id__name',
         'size', 
@@ -57,14 +57,11 @@ class PatchAdmin(admin.ModelAdmin):
     ]
     search_fields = ['serial_number']
 
-    def get_ordering(self, request):
-        return ['serial_number']
 
 class ReleaseAdmin(admin.ModelAdmin):
-    fields = ['patch_id', 'is_enable', 'download_count', 'apply_count', 'is_gray', 'pool_size']
-    list_display = ('patch_id', 'is_enable', 'is_gray', 'create_time', 'update_time')
+    fields = ['patch_id', 'serial_number', 'is_enable', 'download_count', 'apply_count', 'is_gray', 'pool_size']
+    list_display = ('patch_id', 'serial_number', 'is_enable', 'is_gray', 'create_time', 'update_time')
     list_filter = [
-        'patch_id__serial_number',
         'is_enable', 
         'is_gray', 
         'create_time',
