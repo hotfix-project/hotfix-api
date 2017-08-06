@@ -43,3 +43,7 @@ python3.6 manage.py showmigrations
 # run
 python3.6 manage.py runserver 0.0.0.0:8000
 ```
+
+#TODO
+* ratelimit
+  https://djangopackages.org/packages/p/django-ratelimit/
