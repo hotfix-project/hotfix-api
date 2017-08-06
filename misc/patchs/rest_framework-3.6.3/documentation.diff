@@ -1,0 +1,7 @@
+1a2,3
+> from django.contrib.auth.decorators import login_required
+> from django.conf import settings
+52a55
+>     docs_view = login_required(docs_view, login_url=getattr(settings, 'LOGIN_URL', None))
+60a64
+>     schema_js_view = login_required(schema_js_view, login_url=getattr(settings, 'LOGIN_URL', None))
