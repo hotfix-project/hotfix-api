@@ -2,7 +2,7 @@
 HitFix patch manager
 
 # Design
-1. Backend: Restful API 
+1. Backend: REST API
 2. Frontend: Web-apps
 3. Using external storage services
 
