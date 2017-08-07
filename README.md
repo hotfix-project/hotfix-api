@@ -53,4 +53,3 @@ python3.6 manage.py runserver 0.0.0.0:8000
     return: rsa,downloada\_url
   2. download patch
   3. report update status
-* refactoring install script
