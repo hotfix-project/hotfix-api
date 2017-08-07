@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import Max
 import datetime
-
+import uuid
 # Create your models here.
 
 class System(models.Model):
@@ -23,8 +23,8 @@ class App(models.Model):
     category_id = models.ForeignKey(Category)  
     system_id = models.ForeignKey(System)  
     name = models.CharField(max_length=64, null=False, unique=True)
-    key = models.CharField(max_length=1024, null=False)
-    secret = models.CharField(max_length=1024, null=False)
+    key = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
+    secret = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     rsa = models.TextField(null=False)
 
     def __str__(self):  
