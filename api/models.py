@@ -72,6 +72,9 @@ class Release(models.Model):
             releases = Release.objects.filter(patch_id=self.patch_id.id)
             releases.update(is_enable=False)
             result = releases.aggregate(number=Max('serial_number'))
-            self.serial_number = result["number"] + 1
+            if result["number"] is None:
+                self.serial_number = 1
+            else:
+                self.serial_number = result["number"] + 1
             self.is_enable = True
         super(Release, self).save(*args, **kw)
