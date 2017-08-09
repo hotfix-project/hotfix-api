@@ -1,19 +1,19 @@
 from django.db import models
 from django.db.models import Max
 import datetime
-
+import uuid
 # Create your models here.
 
 class System(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=1024, null=False)
+    name = models.CharField(max_length=64, null=False, unique=True)
 
     def __str__(self):  
         return self.name
 
 class Category(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=1024, null=False)
+    name = models.CharField(max_length=64, null=False, unique=True)
   
     def __str__(self):  
         return self.name
@@ -22,9 +22,9 @@ class App(models.Model):
     id = models.AutoField(primary_key=True)
     category_id = models.ForeignKey(Category)  
     system_id = models.ForeignKey(System)  
-    name = models.CharField(max_length=1024, null=False)
-    key = models.CharField(max_length=1024, null=False)
-    secret = models.CharField(max_length=1024, null=False)
+    name = models.CharField(max_length=64, null=False, unique=True)
+    key = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
+    secret = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     rsa = models.TextField(null=False)
 
     def __str__(self):  
@@ -34,7 +34,7 @@ class App(models.Model):
 class Version(models.Model):
     id = models.AutoField(primary_key=True)
     app_id = models.ForeignKey(App)  
-    name = models.CharField(max_length=1024, null=False)
+    name = models.CharField(max_length=64, null=False, unique=True)
     create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):  

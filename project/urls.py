@@ -21,6 +21,8 @@ from rest_framework.documentation import include_docs_urls
 from api import views
 from rest_framework_swagger.views import get_swagger_view
 
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'categorys', views.CategoryViewSet)
 router.register(r'systems', views.SystemViewSet)
@@ -38,3 +40,5 @@ urlpatterns = [
     url(r'^docs/', include_docs_urls(title='Hotfix API')),
     url(r'^$', schema_view),
 ]
+
+urlpatterns += staticfiles_urlpatterns()

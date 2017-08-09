@@ -2,8 +2,8 @@
 HitFix patch manager
 
 # Design
-1. Restful API 
-2. Web-apps
+1. Backend: REST API
+2. Frontend: Web-apps
 3. Using external storage services
 
 # Ref
@@ -13,13 +13,6 @@ HitFix patch manager
 # Requirements
 * Python 3.6+
 * Django 1.11.4+
-* MySQLdb
-* djangorestframework
-* markdown
-* django-filter
-* pygments
-* coreapi
-* django-rest-swagger
 
 
 # A-line-Shell

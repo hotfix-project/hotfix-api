@@ -23,7 +23,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class AppAdmin(admin.ModelAdmin):
     fields = ['name', 'category_id', 'system_id', 'key', 'secret', 'rsa']
-    list_display = ('name', 'category_id', 'system_id', 'key', 'secret', 'rsa')
+    list_display = ('name', 'category_id', 'system_id', 'key', 'secret')
     list_filter = [
         'category_id',
         'system_id',
