@@ -22,6 +22,7 @@ from api import views
 from rest_framework_swagger.views import get_swagger_view
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from rest_framework.authtoken import views as authviews
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'categorys', views.CategoryViewSet)
@@ -42,3 +43,7 @@ urlpatterns = [
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+
+urlpatterns += [
+    url(r'^api-token-auth/', authviews.obtain_auth_token)
+]

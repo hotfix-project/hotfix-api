@@ -1,6 +1,8 @@
 from django.contrib import admin
 
 from .models import System, Category, App, Version, Patch, Release
+from rest_framework.authtoken.admin import TokenAdmin
+
 
 
 class SystemAdmin(admin.ModelAdmin):
@@ -74,3 +76,5 @@ admin.site.register(App, AppAdmin)
 admin.site.register(Version, VersionAdmin)
 admin.site.register(Patch, PatchAdmin)
 admin.site.register(Release, ReleaseAdmin)
+
+TokenAdmin.raw_id_fields = ('user',)
