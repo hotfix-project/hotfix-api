@@ -9,6 +9,7 @@ HotFix restful api
 # Requirements
 * Python 3.6+
 * Django 1.11.4+
+* [More](requirements.txt?raw=true)
 
 # INSTALL
 1. download source
@@ -38,6 +39,16 @@ HotFix restful api
     ```  
     sh startup.sh
     ```
+
+# Presentation
+
+Click thumbnails to enlarge.
+
+## Managing APPs
+[![Listing Apps](screenshots/app_list_thumbnail.png)](screenshots/app_list.png?raw=true)
+
+## Managing Versions
+[![Listing Versions](screenshots/app_version_thumbnail.png)](screenshots/app_version.png?raw=true)
 
 # Ref
 * [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
