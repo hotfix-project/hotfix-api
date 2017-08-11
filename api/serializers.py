@@ -17,7 +17,7 @@ class SystemSerializer(serializers.HyperlinkedModelSerializer):
 class AppSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = App
-        fields = ('id', 'name', 'category_id', 'system_id')
+        fields = ('id', 'name', 'category_id', 'system_id', 'key', 'secret', 'rsa')
 
 
 class VersionSerializer(serializers.HyperlinkedModelSerializer):
