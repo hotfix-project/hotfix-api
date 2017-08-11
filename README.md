@@ -1,5 +1,5 @@
 # HotFix
-HitFix patch manager
+HitFix restful api
 
 # Design
 1. Backend: REST API
@@ -14,32 +14,7 @@ HitFix patch manager
 * Python 3.6+
 * Django 1.11.4+
 
-
-# A-line-Shell
-cmdline help
-```
-# init project
-django-admin.py startproject project
-django-admin.py startapp app
-cd ..
-
-# init database 
-python3.6 manage.py migrate
-python3.6 manage.py createsuperuser
-
-
-# reinit database
-python3.6 manage.py makemigrations
-python3.6 manage.py migrate
-python3.6 manage.py showmigrations
-
-# run
-python3.6 manage.py runserver 0.0.0.0:8000
-```
-
 # TODO
-* ratelimit
-  https://djangopackages.org/packages/p/django-ratelimit/
 * client workflow
   1. checkout update
     param: app\_version,key,sign,
