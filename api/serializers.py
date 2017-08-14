@@ -1,4 +1,4 @@
-from .models import Category, System, App, Version, Patch, Release
+from .models import Category, System, App, Version, Patch
 from rest_framework import serializers
 
 
@@ -29,13 +29,10 @@ class VersionSerializer(serializers.HyperlinkedModelSerializer):
 class PatchSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Patch
-        fields = ('id', 'version_id', 'size', 'desc', 'download_url', 'upload_time')
-
-
-class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Release
         fields = (
-            'id', 'patch_id', 'serial_number', 'is_enable', 
-            'download_count', 'apply_count', 'is_gray', 'pool_size'
+            'id', 'version_id', 'size', 'desc', 
+            'download_url', 'serial_number', 
+            'is_enable', 'download_count', 'apply_count', 
+            'is_gray', 'pool_size'
         )
+

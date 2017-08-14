@@ -1,7 +1,7 @@
-from .models import Category, System, App, Version, Patch, Release
+from .models import Category, System, App, Version, Patch
 from rest_framework import viewsets
 from .serializers import CategorySerializer, SystemSerializer, AppSerializer
-from .serializers import VersionSerializer, PatchSerializer, ReleaseSerializer
+from .serializers import VersionSerializer, PatchSerializer
 from rest_framework import filters
 
 
@@ -36,12 +36,4 @@ class PatchViewSet(viewsets.ModelViewSet):
     serializer_class = PatchSerializer
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ('version_id',)
-    ordering_fields = ('id', 'size', 'upload_time')
-
-
-class ReleaseViewSet(viewsets.ModelViewSet):
-    queryset = Release.objects.all()
-    serializer_class = ReleaseSerializer
-    filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
-    filter_fields = ('patch_id',)
-    ordering_fields = ('id', 'serial_number', 'create_time', 'update_time')
+    ordering_fields = ('id', 'size', 'create_time', 'update_time', 'serial_number')

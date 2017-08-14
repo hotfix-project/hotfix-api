@@ -30,7 +30,6 @@ router.register(r'systems', views.SystemViewSet)
 router.register(r'apps', views.AppViewSet)
 router.register(r'versions', views.VersionViewSet)
 router.register(r'patchs', views.PatchViewSet)
-router.register(r'releases', views.ReleaseViewSet)
 
 schema_view = get_swagger_view(title='Hotfix API')
 
