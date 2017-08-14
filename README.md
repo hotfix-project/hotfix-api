@@ -54,10 +54,9 @@ Click thumbnails to enlarge.
 * [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
 * [Django Modle FieldType](https://docs.djangoproject.com/en/1.11/ref/models/fields/)
 
-# TODO
-* client workflow
-  1. checkout update
-    param: app\_version,key,sign,
-    return: rsa,downloada\_url
-  2. download patch
-  3. report update status
+# Client workflow
+1. Checkout update
+  * `param`: version,key,timestamp,sign,
+  * `return`: rsa,download\_url
+2. Download patch&Decrypt patch&Verification patch&Apply patch
+3. Report update status

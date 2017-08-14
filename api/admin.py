@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import System, Category, App, Version, Patch, Release
+from .models import System, Category, App, Version, Patch
 from rest_framework.authtoken.admin import TokenAdmin
 
 
@@ -50,31 +50,28 @@ class VersionAdmin(admin.ModelAdmin):
         return ['name']
 
 class PatchAdmin(admin.ModelAdmin):
-    fields = ['version_id', 'size', 'desc', 'download_url']
-    list_display = ('version_id', 'size', 'desc', 'upload_time')
+    fields = [
+        'version_id', 'size', 'desc', 'download_url',
+        'serial_number', 'is_enable', 'download_count', 
+        'apply_count', 'is_gray', 'pool_size'
+    ]
+    list_display = (
+        'version_id', 'size', 'desc', 'serial_number', 
+        'is_enable', 'is_gray', 'create_time', 'update_time'
+    )
     list_filter = [
         'version_id__name',
         'size', 
-        'upload_time', 
+        'create_time', 
+        'update_time',
     ]
     search_fields = ['serial_number']
 
-
-class ReleaseAdmin(admin.ModelAdmin):
-    fields = ['patch_id', 'serial_number', 'is_enable', 'download_count', 'apply_count', 'is_gray', 'pool_size']
-    list_display = ('patch_id', 'serial_number', 'is_enable', 'is_gray', 'create_time', 'update_time')
-    list_filter = [
-        'is_enable', 
-        'is_gray', 
-        'create_time',
-    ]
-    search_fields = ['name']
 
 admin.site.register(System, SystemAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(App, AppAdmin)
 admin.site.register(Version, VersionAdmin)
 admin.site.register(Patch, PatchAdmin)
-admin.site.register(Release, ReleaseAdmin)
 
 TokenAdmin.raw_id_fields = ('user',)

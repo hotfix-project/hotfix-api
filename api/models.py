@@ -44,18 +44,10 @@ class Version(models.Model):
 class Patch(models.Model):
     id = models.AutoField(primary_key=True)
     version_id = models.ForeignKey(Version)  
-    size = models.IntegerField(null=False)
     desc = models.CharField(max_length=1024, null=False)
-    upload_time = models.DateTimeField(auto_now=True)
-    download_url = models.URLField(null=False)
-
-    def __str__(self):  
-        return str(self.id)
-
-class Release(models.Model):
-    id = models.AutoField(primary_key=True)
-    patch_id = models.ForeignKey(Patch)  
     serial_number = models.IntegerField(default=0)
+    download_url = models.URLField(null=False)
+    size = models.IntegerField(null=False)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)
     download_count = models.IntegerField(default=0)
@@ -69,12 +61,12 @@ class Release(models.Model):
 
     def save(self, *args, **kw):
         if self.is_enable:
-            releases = Release.objects.filter(patch_id=self.patch_id.id)
-            releases.update(is_enable=False)
-            result = releases.aggregate(number=Max('serial_number'))
+            patchs = Patch.objects.all()
+            patchs.update(is_enable=False)
+            result = patchs.aggregate(number=Max('serial_number'))
             if result["number"] is None:
                 self.serial_number = 1
             else:
                 self.serial_number = result["number"] + 1
             self.is_enable = True
-        super(Release, self).save(*args, **kw)
+        super(Patch, self).save(*args, **kw)
