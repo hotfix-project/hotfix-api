@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models import Max
-import datetime
 import uuid
 # Create your models here.
 
