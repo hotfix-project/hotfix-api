@@ -4,7 +4,6 @@ from .models import System, Category, App, Version, Patch
 from rest_framework.authtoken.admin import TokenAdmin
 
 
-
 class SystemAdmin(admin.ModelAdmin):
     fields = ['name']
     list_display = ('name',)
@@ -13,6 +12,7 @@ class SystemAdmin(admin.ModelAdmin):
 
     def get_ordering(self, request):
         return ['name']
+
 
 class CategoryAdmin(admin.ModelAdmin):
     fields = ['name']
@@ -23,25 +23,27 @@ class CategoryAdmin(admin.ModelAdmin):
     def get_ordering(self, request):
         return ['name']
 
+
 class AppAdmin(admin.ModelAdmin):
     fields = ['name', 'category_id', 'system_id', 'key', 'secret', 'rsa']
     list_display = ('name', 'category_id', 'system_id', 'key', 'secret')
     list_filter = [
         'category_id',
         'system_id',
-        'name', 
+        'name',
     ]
     search_fields = ['name']
 
     def get_ordering(self, request):
         return ['name']
 
+
 class VersionAdmin(admin.ModelAdmin):
     fields = ['name', 'app_id']
     list_display = ('name', 'app_id', 'create_time')
     list_filter = [
         'app_id__name',
-        'name', 
+        'name',
         'create_time',
     ]
     search_fields = ['name']
@@ -49,20 +51,21 @@ class VersionAdmin(admin.ModelAdmin):
     def get_ordering(self, request):
         return ['name']
 
+
 class PatchAdmin(admin.ModelAdmin):
     fields = [
         'version_id', 'size', 'desc', 'download_url',
-        'serial_number', 'is_enable', 'download_count', 
+        'serial_number', 'is_enable', 'download_count',
         'apply_count', 'is_gray', 'pool_size'
     ]
     list_display = (
-        'version_id', 'size', 'desc', 'serial_number', 
+        'version_id', 'size', 'desc', 'serial_number',
         'is_enable', 'is_gray', 'create_time', 'update_time'
     )
     list_filter = [
         'version_id__name',
-        'size', 
-        'create_time', 
+        'size',
+        'create_time',
         'update_time',
     ]
     search_fields = ['serial_number']
