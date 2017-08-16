@@ -4,6 +4,7 @@ from .serializers import CategorySerializer, SystemSerializer, AppSerializer
 from .serializers import VersionSerializer, PatchSerializer
 from rest_framework import filters
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+from django.db import transaction
 import json
 
 
@@ -47,6 +48,7 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
     ordering_fields = ('id', 'size', 'create_time', 'update_time', 'serial_number')
 
 
+@transaction.atomic
 def check_update(request):
     app_id = request.GET.get('app_id')
     if app_id is None:
@@ -64,7 +66,7 @@ def check_update(request):
         return HttpResponseNotFound('{"detail":"version is not found"}')
     try:
         selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
-        patchs = Patch.objects.filter(version_id=version.id, status__in=selected)
+        patchs = Patch.objects.select_for_update().filter(version_id=version.id, status__in=selected)
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
