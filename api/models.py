@@ -4,20 +4,25 @@ import uuid
 # Create your models here.
 
 
-class System(models.Model):
+class DictObject(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=64, null=False, unique=True)
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        abstract = True
 
-class Category(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=64, null=False, unique=True)
 
-    def __str__(self):
-        return self.name
+class System(DictObject):
+    class Meta:
+        verbose_name = "system"
+
+
+class Category(DictObject):
+    class Meta:
+        verbose_name = "category"
 
 
 class App(models.Model):

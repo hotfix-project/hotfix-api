@@ -51,7 +51,7 @@ def check_update(request):
     app_id = request.GET.get('app_id')
     if app_id is None:
         return HttpResponseBadRequest('{"detail":"query param app_id is required"}')
-    version = page_num = request.GET.get('version')
+    version = request.GET.get('version')
     if version is None:
         return HttpResponseBadRequest('{"detail":"query param version is required"}')
     try:

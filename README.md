@@ -1,5 +1,5 @@
-# HotFix
-HotFix restful api
+# HotFix Rest API
+[![Build Status](https://img.shields.io/travis/hotfix-project/hotfix-api.svg?branch=master)]( https://travis-ci.org/hotfix-project/hotfix-api) [![Requirements Status](https://requires.io/github/hotfix-project/hotfix-api/requirements.svg?branch=master)](https://requires.io/github/hotfix-project/hotfix-api/requirements/?branch=master) [![Coverage Status](https://coveralls.io/repos/github/hotfix-project/hotfix-api/badge.svg?branch=master)](https://coveralls.io/github/hotfix-project/hotfix-api?branch=master) [![Code Climate](https://codeclimate.com/github/hotfix-project/hotfix-api.png)](https://codeclimate.com/github/hotfix-project/hotfix-api)
 
 # Design
 1. Backend: REST API
@@ -7,11 +7,13 @@ HotFix restful api
 3. Using external storage services
 
 # Requirements
-* Python 3.6+
-* Django 1.11.4+
+* Python 3.6
+* Django 
+  * 1.10.7
+  * 1.11.4
 * [More](requirements.txt?raw=true)
 
-# INSTALL
+# Install
 1. download source
     ```
     git clone https://github.com/hotfix-project/hotfix-api.git
@@ -61,6 +63,6 @@ Click thumbnails to enlarge.
 
 
 # Client workflow
-1. Checkout update
+1. Check update
 2. Download patch&Decrypt patch&Verification patch&Apply patch
 3. Report update status
