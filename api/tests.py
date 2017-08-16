@@ -63,6 +63,31 @@ def create_patch(client, version_id):
     return client.post(url, data, format='json')
  
 
+def list_category(client):
+    url = '/hotfix/categorys'
+    return client.get(url)
+
+
+def list_system(client):
+    url = '/hotfix/systems'
+    return client.get(url)
+
+
+def list_app(client):
+    url = '/hotfix/apps'
+    return client.get(url)
+
+
+def list_version(client):
+    url = '/hotfix/versions'
+    return client.get(url)
+
+
+def list_patch(client):
+    url = '/hotfix/patchs'
+    return client.get(url)
+
+
 class CategoryTests(APITestCase):
     def test_create_category(self):
         """
@@ -75,8 +100,12 @@ class CategoryTests(APITestCase):
         self.assertEqual(Category.objects.count(), 1)
         self.assertEqual(Category.objects.get(name='Finance').name, "Finance")
 
-    def test_auth_category(self):
+    def test_auth401_create_category(self):
         response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth401_list_category(self):
+        response = list_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -92,8 +121,12 @@ class SystemTests(APITestCase):
         self.assertEqual(System.objects.count(), 1)
         self.assertEqual(System.objects.get(name='Android').name, "Android")
 
-    def test_auth_category(self):
+    def test_auth401_create_system(self):
         response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth401_list_system(self):
+        response = list_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -117,8 +150,12 @@ class AppTests(APITestCase):
         self.assertEqual(App.objects.count(), 1)
         self.assertEqual(App.objects.get(id=1).name, "iPos")
 
-    def test_auth_app(self):
+    def test_auth401_create_app(self):
         response = create_app(self.client, 0, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth401_list_app(self):
+        response = list_app(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -146,8 +183,12 @@ class VersionTests(APITestCase):
         self.assertEqual(App.objects.count(), 1)
         self.assertEqual(Version.objects.get(name='1.1.1').name, "1.1.1")
 
-    def test_auth_version(self):
+    def test_auth401_create_version(self):
         response = create_version(self.client, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth401_list_version(self):
+        response = list_version(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
@@ -179,6 +220,10 @@ class PatchTests(APITestCase):
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
 
-    def test_auth_patch(self):
+    def test_auth401_create_patch(self):
         response = create_patch(self.client, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_auth401_list_patch(self):
+        response = list_patch(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
