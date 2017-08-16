@@ -75,6 +75,10 @@ class CategoryTests(APITestCase):
         self.assertEqual(Category.objects.count(), 1)
         self.assertEqual(Category.objects.get(name='Finance').name, "Finance")
 
+    def test_auth_category(self):
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class SystemTests(APITestCase):
     def test_create_system(self):
@@ -87,6 +91,10 @@ class SystemTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(System.objects.count(), 1)
         self.assertEqual(System.objects.get(name='Android').name, "Android")
+
+    def test_auth_category(self):
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class AppTests(APITestCase):
@@ -108,6 +116,10 @@ class AppTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(App.objects.count(), 1)
         self.assertEqual(App.objects.get(id=1).name, "iPos")
+
+    def test_auth_app(self):
+        response = create_app(self.client, 0, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class VersionTests(APITestCase):
@@ -133,6 +145,10 @@ class VersionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(App.objects.count(), 1)
         self.assertEqual(Version.objects.get(name='1.1.1').name, "1.1.1")
+
+    def test_auth_version(self):
+        response = create_version(self.client, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class PatchTests(APITestCase):
@@ -162,3 +178,7 @@ class PatchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+    def test_auth_patch(self):
+        response = create_patch(self.client, 0)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
