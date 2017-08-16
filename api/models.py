@@ -50,16 +50,18 @@ class Version(models.Model):
 
 
 class Patch(models.Model):
-    STATUS_WAIT = 0
-    STATUS_RELEASE = 1
-    STATUS_STOP = 2
-    STATUS_GARY = 3
+    STATUS_WAITING = 0
+    STATUS_RELEASED = 1
+    STATUS_STOPED = 2
+    STATUS_PRERELEASED = 3
+    STATUS_DELETED = 4
 
     STATUS_CHOICES = (
-        (STATUS_WAIT, _('Wait')),
-        (STATUS_RELEASE, _('Release')),
-        (STATUS_STOP, _('Stop')),
-        (STATUS_GARY, _('Gary')),
+        (STATUS_WAITING, _('Waiting')),
+        (STATUS_RELEASED, _('Released')),
+        (STATUS_STOPED, _('Stoped')),
+        (STATUS_PRERELEASED, _('PreReleased')),
+        (STATUS_DELETED, _('Deleted')),
     )
 
     id = models.AutoField(primary_key=True)
@@ -72,20 +74,20 @@ class Patch(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
-    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAIT)
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAITING)
     pool_size = models.IntegerField(default=0)
 
     def __str__(self):
         return str(self.id)
 
     def save(self, *args, **kw):
-        if self.status == self.STATUS_RELEASE:
+        if self.status == self.STATUS_RELEASED:
             patchs = Patch.objects.all()
-            patchs.update(status=self.STATUS_STOP)
+            patchs.update(status=self.STATUS_STOPED)
             result = patchs.aggregate(number=Max('serial_number'))
             if result["number"] is None:
                 self.serial_number = 1
             else:
                 self.serial_number = result["number"] + 1
-            self.status = self.STATUS_RELEASE
+            self.status = self.STATUS_RELEASED
         super(Patch, self).save(*args, **kw)
