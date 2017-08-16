@@ -19,23 +19,23 @@ def set_credentials(client):
 
 
 def create_category(client):
-    url = '/hotfix/categorys'
+    url = '/api/categorys'
     data = {'name': 'Finance'}
     return client.post(url, data, format='json')
 
 
 def create_system(client):
-    url = '/hotfix/systems'
+    url = '/api/systems'
     data = {'name': 'Android'}
     return client.post(url, data, format='json')
 
 
 def create_app(client, category_id, system_id):
-    url = '/hotfix/apps'
+    url = '/api/apps'
     data = {
         'name': 'iPos',
-        'category_id': 'http://127.0.0.1/hotfix/categorys/' + str(category_id),
-        'system_id': 'http://127.0.0.1/hotfix/systems/' + str(system_id), 
+        'category_id': 'http://127.0.0.1/api/categorys/' + str(category_id),
+        'system_id': 'http://127.0.0.1/api/systems/' + str(system_id), 
         'key': 'key',
         'secret': 'secret',
         'rsa': 'rsa'
@@ -44,18 +44,18 @@ def create_app(client, category_id, system_id):
  
 
 def create_version(client, app_id):
-    url = '/hotfix/versions'
+    url = '/api/versions'
     data = {
-        'app_id': 'http://127.0.0.1/hotfix/apps/' + str(app_id),
+        'app_id': 'http://127.0.0.1/api/apps/' + str(app_id),
         'name': '1.1.1', 
     }
     return client.post(url, data, format='json')
  
 
 def create_patch(client, version_id):
-    url = '/hotfix/patchs'
+    url = '/api/patchs'
     data = {
-        'version_id': 'http://127.0.0.1/hotfix/versions/' + str(version_id),
+        'version_id': 'http://127.0.0.1/api/versions/' + str(version_id),
         'desc': 'a patch', 
         'download_url': 'http://www.baidu.com/', 
         'size': 1000, 
@@ -64,27 +64,27 @@ def create_patch(client, version_id):
  
 
 def list_category(client):
-    url = '/hotfix/categorys'
+    url = '/api/categorys'
     return client.get(url)
 
 
 def list_system(client):
-    url = '/hotfix/systems'
+    url = '/api/systems'
     return client.get(url)
 
 
 def list_app(client):
-    url = '/hotfix/apps'
+    url = '/api/apps'
     return client.get(url)
 
 
 def list_version(client):
-    url = '/hotfix/versions'
+    url = '/api/versions'
     return client.get(url)
 
 
 def list_patch(client):
-    url = '/hotfix/patchs'
+    url = '/api/patchs'
     return client.get(url)
 
 
