@@ -63,21 +63,30 @@ def check_update(request):
     except Version.DoesNotExist:
         return HttpResponseNotFound('{"detail":"version is not found"}')
     try:
-        patch = Patch.objects.get(id=version.id, status=1)
+        selects = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
+        patchs = Patch.objects.filter(id=version.id, status__in=selects)
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
     data = {
         "id": app.id,
+        "version": version.name,
         "rsa": app.rsa,
-        "version": {
-            "name": version.name,
-            "patch": {
-                "id": patch.id,
-                "size": patch.size,
-                "download_url": patch.download_url
-            }
+        "results": {
+            "released": list(patchs.filter(
+                status=Patch.STATUS_RELEASED).values(
+                    'id', 'version_id', 'status', 'download_url')),
+            "prereleased": list(patchs.filter(
+                status=Patch.STATUS_PRERELEASED).filter(pool_size__gt=0).values(
+                    'id', 'version_id', 'status', 'download_url')),
+            "deleted": list(patchs.filter(
+                status=Patch.STATUS_DELETED).values('id', 'version_id')),
         }
     }
+
+    for patch in patchs:
+        if patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0:
+            patch.pool_size = patch.pool_size - 1
+            patch.save()
         
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")

@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 import json
+import uuid
 
 def set_credentials(client):
     user = User.objects.create_superuser('admin', 'admin@admin.com', '123456@admin')
@@ -30,10 +31,10 @@ def create_system(client):
     return client.post(url, data, format='json')
 
 
-def create_app(client, category_id, system_id):
+def create_app(client, category_id, system_id, name):
     url = '/api/apps'
     data = {
-        'name': 'iPos',
+        'name': name,
         'category_id': 'http://127.0.0.1/api/categorys/' + str(category_id),
         'system_id': 'http://127.0.0.1/api/systems/' + str(system_id), 
         'key': 'key',
@@ -52,14 +53,15 @@ def create_version(client, app_id):
     return client.post(url, data, format='json')
  
 
-def create_patch(client, version_id, status=0):
+def create_patch(client, version_id, status=Patch.STATUS_WAITING, pool_size=0):
     url = '/api/patchs'
     data = {
         'version_id': 'http://127.0.0.1/api/versions/' + str(version_id),
         'desc': 'a patch', 
         'download_url': 'http://www.baidu.com/', 
         'size': 1000, 
-        'status': status
+        'status': status,
+        'pool_size':pool_size,
     }
     return client.post(url, data, format='json')
  
@@ -137,6 +139,7 @@ class AppTests(APITestCase):
         Ensure we can create a new App object.
         """
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -146,13 +149,14 @@ class AppTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(App.objects.count(), 1)
-        self.assertEqual(App.objects.get(id=1).name, "iPos")
+        self.assertEqual(App.objects.get(name=name).name, name)
 
     def test_auth401_create_app(self):
-        response = create_app(self.client, 0, 0)
+        name = uuid.uuid4().hex
+        response = create_app(self.client, 0, 0, name)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_auth401_list_app(self):
@@ -166,6 +170,7 @@ class VersionTests(APITestCase):
         Ensure we can create a new App object.
         """
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -175,9 +180,9 @@ class VersionTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app_id = App.objects.get(name='iPos').id
+        app_id = App.objects.get(name=name).id
 
         response = create_version(self.client, app_id)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -199,6 +204,7 @@ class PatchTests(APITestCase):
         Ensure we can create a new App object.
         """
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -208,9 +214,9 @@ class PatchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app_id = App.objects.get(name='iPos').id
+        app_id = App.objects.get(name=name).id
 
         response = create_version(self.client, app_id)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -248,6 +254,7 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.content, b'{"detail":"app is not found"}')
     def test_version_not_found(self):
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -257,9 +264,9 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app_id = App.objects.get(name='iPos').id
+        app_id = App.objects.get(name=name).id
 
         url = '/check_update?app_id=%s&version=1.1.1' % (app_id)
         response = self.client.get(url)
@@ -267,6 +274,7 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.content, b'{"detail":"version is not found"}')
     def test_patch_not_found(self):
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -276,9 +284,9 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app = App.objects.get(name='iPos')
+        app = App.objects.get(name=name)
 
         response = create_version(self.client, app.id)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -286,10 +294,14 @@ class CheckUpdateTests(APITestCase):
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 0)
+        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
     def test_patch_not_found_2(self):
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -299,9 +311,9 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app = App.objects.get(name='iPos')
+        app = App.objects.get(name=name)
 
         response = create_version(self.client, app.id)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -314,10 +326,14 @@ class CheckUpdateTests(APITestCase):
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
-    def test_patch(self):
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 0)
+        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
+    def test_patch_released(self):
         set_credentials(self.client)
+        name = uuid.uuid4().hex
 
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -327,19 +343,107 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         system_id = System.objects.get(name='Android').id
 
-        response = create_app(self.client, category_id, system_id)
+        response = create_app(self.client, category_id, system_id, name)
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        app = App.objects.get(name='iPos')
+        app = App.objects.get(name=name)
 
         response = create_version(self.client, app.id)
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         version = Version.objects.get(name='1.1.1')
 
-        response = create_patch(self.client, version.id, status=1)
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        print(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
+        print(response.content)
+        print(Patch.objects.all().values("status", "version_id"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 1)
+        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
+    def test_patch_prereleased(self):
+        set_credentials(self.client)
+        name = uuid.uuid4().hex
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id, name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=name)
+
+        response = create_version(self.client, app.id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name='1.1.1')
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=3)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        for i in range(2):
+            url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            data = json.loads(response.content)
+            self.assertEqual(len(data["results"]["released"]), 0)
+            self.assertEqual(len(data["results"]["prereleased"]), 1)
+            self.assertEqual(len(data["results"]["deleted"]), 0)
+
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 0)
+        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
+    def test_patch_deleted(self):
+        set_credentials(self.client)
+        name = uuid.uuid4().hex
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id, name)
+        print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=name)
+
+        response = create_version(self.client, app.id)
+        print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name='1.1.1')
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_DELETED)
+        print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        print(response.content)
+        print(Patch.objects.all().values("status", "version_id"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 0)
+        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["deleted"]), 1)
+ 
