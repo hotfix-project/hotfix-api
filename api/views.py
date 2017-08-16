@@ -64,7 +64,7 @@ def check_update(request):
         return HttpResponseNotFound('{"detail":"version is not found"}')
     try:
         selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
-        patchs = Patch.objects.filter(id=version.id, status__in=selected)
+        patchs = Patch.objects.filter(version_id=version.id, status__in=selected)
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
