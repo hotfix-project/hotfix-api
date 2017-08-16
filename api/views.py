@@ -70,12 +70,12 @@ def check_update(request):
 
     released = list(patchs.filter(
         status=Patch.STATUS_RELEASED).values(
-            'id', 'version_id', 'status', 'download_url'))
+            'id', 'download_url'))
     prereleased = list(patchs.filter(
         status=Patch.STATUS_PRERELEASED, pool_size__gt=0).values(
-            'id', 'version_id', 'status', 'download_url'))
+            'id', 'download_url'))
     deleted = list(patchs.filter(
-        status=Patch.STATUS_DELETED).values('version_id'))
+        status=Patch.STATUS_DELETED).values('id'))
     data = {
         "id": app.id,
         "version": version.name,
