@@ -61,7 +61,7 @@ def create_patch(client, version_id, status=Patch.STATUS_WAITING, pool_size=0):
         'download_url': 'http://www.baidu.com/', 
         'size': 1000, 
         'status': status,
-        'pool_size':pool_size,
+        'pool_size': pool_size,
     }
     return client.post(url, data, format='json')
  
@@ -301,7 +301,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["prereleased"]), 0)
         self.assertEqual(len(data["results"]["deleted"]), 0)
     def test_patch_not_found_2(self):
         set_credentials(self.client)
@@ -334,7 +333,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["prereleased"]), 0)
         self.assertEqual(len(data["results"]["deleted"]), 0)
     def test_patch_released(self):
         set_credentials(self.client)
@@ -367,7 +365,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["results"]["released"]), 1)
-        self.assertEqual(len(data["results"]["prereleased"]), 0)
         self.assertEqual(len(data["results"]["deleted"]), 0)
     def test_patch_prereleased(self):
         set_credentials(self.client)
@@ -401,8 +398,7 @@ class CheckUpdateTests(APITestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
-            self.assertEqual(len(data["results"]["released"]), 0)
-            self.assertEqual(len(data["results"]["prereleased"]), 1)
+            self.assertEqual(len(data["results"]["released"]), 1)
             self.assertEqual(len(data["results"]["deleted"]), 0)
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
@@ -410,8 +406,78 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["prereleased"]), 0)
         self.assertEqual(len(data["results"]["deleted"]), 0)
+    def test_patch_released_prereleased(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=100)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 2)
+
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 1)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
+    def test_patch_prereleased_released(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=100)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 2)
+
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = json.loads(response.content)
+        self.assertEqual(len(data["results"]["released"]), 1)
+        self.assertEqual(len(data["results"]["deleted"]), 0)
+ 
     def test_patch_deleted(self):
         set_credentials(self.client)
 
@@ -433,15 +499,21 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         version = Version.objects.get(name=version_name)
 
-        response = create_patch(self.client, version.id, status=Patch.STATUS_DELETED)
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
-        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=100)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 2)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_DELETED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 3)
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["prereleased"]), 0)
+        self.assertEqual(len(data["results"]["released"]), 1)
         self.assertEqual(len(data["results"]["deleted"]), 1)

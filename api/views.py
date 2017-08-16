@@ -68,19 +68,21 @@ def check_update(request):
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
+    released = list(patchs.filter(
+        status=Patch.STATUS_RELEASED).values(
+            'id', 'version_id', 'status', 'download_url'))
+    prereleased = list(patchs.filter(
+        status=Patch.STATUS_PRERELEASED, pool_size__gt=0).values(
+            'id', 'version_id', 'status', 'download_url'))
+    deleted = list(patchs.filter(
+        status=Patch.STATUS_DELETED).values('version_id'))
     data = {
         "id": app.id,
         "version": version.name,
         "rsa": app.rsa,
         "results": {
-            "released": list(patchs.filter(
-                status=Patch.STATUS_RELEASED).values(
-                    'id', 'version_id', 'status', 'download_url')),
-            "prereleased": list(patchs.filter(
-                status=Patch.STATUS_PRERELEASED).filter(pool_size__gt=0).values(
-                    'id', 'version_id', 'status', 'download_url')),
-            "deleted": list(patchs.filter(
-                status=Patch.STATUS_DELETED).values('id', 'version_id')),
+            "released": released + prereleased,
+            "deleted": deleted
         }
     }
 

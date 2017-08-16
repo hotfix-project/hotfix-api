@@ -48,11 +48,11 @@ class Version(models.Model):
 
 
 class Patch(models.Model):
-    STATUS_WAITING = 0
-    STATUS_RELEASED = 1
-    STATUS_STOPED = 2
+    STATUS_DELETED = 0
+    STATUS_WAITING = 1
+    STATUS_RELEASED = 2
     STATUS_PRERELEASED = 3
-    STATUS_DELETED = 4
+    STATUS_STOPED = 4
 
     STATUS_CHOICES = (
         (STATUS_WAITING, _('Waiting')),
@@ -79,13 +79,14 @@ class Patch(models.Model):
         return str(self.id)
 
     def save(self, *args, **kw):
-        if self.status == self.STATUS_RELEASED:
+        status = self.status
+        if self.status in (self.STATUS_RELEASED, self.STATUS_PRERELEASED):
             patchs = Patch.objects.all()
-            patchs.update(status=self.STATUS_STOPED)
+            patchs.filter(status__gt=self.STATUS_WAITING).update(status=self.STATUS_STOPED)
             result = patchs.aggregate(number=Max('serial_number'))
             if result["number"] is None:
                 self.serial_number = 1
             else:
                 self.serial_number = result["number"] + 1
-            self.status = self.STATUS_RELEASED
+            self.status = status
         super(Patch, self).save(*args, **kw)
