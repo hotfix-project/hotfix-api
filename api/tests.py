@@ -585,3 +585,186 @@ class CheckUpdateTests(APITestCase):
 
         patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_RELEASED) 
         self.assertEqual(patch.download_count, pool_size*2)
+
+
+class CheckReportTests(APITestCase):
+    def test_param_error_patch_id(self):
+        url = '/report_update'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.content, b'{"detail":"query param patch_id is required"}')
+    def test_patch_not_found(self):
+        url = '/report_update?patch_id=0'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
+    def test_patch_wating(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        apply_count = 10
+        url = '/report_update?patch_id=%s' % (patch["id"])
+        for i in range(apply_count):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        patch = Patch.objects.get(id=patch["id"]) 
+        self.assertEqual(patch.apply_count, apply_count)
+    def test_patch_stoped(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_STOPED)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        apply_count = 10
+        url = '/report_update?patch_id=%s' % (patch["id"])
+        for i in range(apply_count):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        patch = Patch.objects.get(id=patch["id"]) 
+        self.assertEqual(patch.apply_count, apply_count)
+    def test_patch_released(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        apply_count = 10
+        url = '/report_update?patch_id=%s' % (patch["id"])
+        for i in range(apply_count):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        patch = Patch.objects.get(id=patch["id"]) 
+        self.assertEqual(patch.apply_count, apply_count)
+    def test_patch_prereleased(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        apply_count = 10
+        url = '/report_update?patch_id=%s' % (patch["id"])
+        for i in range(apply_count):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        patch = Patch.objects.get(id=patch["id"]) 
+        self.assertEqual(patch.apply_count, apply_count)
+    def test_patch_deleted(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_DELETED)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        apply_count = 10
+        url = '/report_update?patch_id=%s' % (patch["id"])
+        for i in range(apply_count):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+        patch = Patch.objects.get(id=patch["id"]) 
+        self.assertEqual(patch.apply_count, apply_count)

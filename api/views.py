@@ -100,3 +100,19 @@ def check_update(request):
             patch.supersave()
         
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
+
+
+@transaction.atomic
+def report_update(request):
+    patch_id = request.GET.get('patch_id')
+    if patch_id is None:
+        return HttpResponseBadRequest('{"detail":"query param patch_id is required"}')
+    patchs = Patch.objects.select_for_update().filter(id=patch_id)
+    if len(patchs) == 0:
+        return HttpResponseNotFound('{"detail":"patch is not found"}')
+
+    for patch in patchs:
+        patch.apply_count = patch.apply_count + 1
+        patch.supersave()
+
+    return HttpResponse('{"detail":"ok"}')

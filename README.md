@@ -63,7 +63,7 @@ Click thumbnails to enlarge.
 
 
 ## Security
-Only expose the api **check_update** to Internet
+Only expose the api **check_update** and **report_update** to Internet
 
 # Client workflow
 1. Check update
