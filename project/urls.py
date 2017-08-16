@@ -18,18 +18,19 @@ from django.contrib import admin
 
 from rest_framework import routers
 from rest_framework.documentation import include_docs_urls
-from api import views
+from api import views as apiviews
+from tools import views as toolsviews
 from rest_framework_swagger.views import get_swagger_view
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.authtoken import views as authviews
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r'categorys', views.CategoryViewSet)
-router.register(r'systems', views.SystemViewSet)
-router.register(r'apps', views.AppViewSet)
-router.register(r'versions', views.VersionViewSet)
-router.register(r'patchs', views.PatchViewSet)
+router.register(r'categorys', apiviews.CategoryViewSet)
+router.register(r'systems', apiviews.SystemViewSet)
+router.register(r'apps', apiviews.AppViewSet)
+router.register(r'versions', apiviews.VersionViewSet)
+router.register(r'patchs', apiviews.PatchViewSet)
 
 schema_view = get_swagger_view(title='Hotfix API')
 
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^docs/', include_docs_urls(title='Hotfix API')),
     url(r'^$', schema_view),
+    url(r'^qrcode/(.+)$', toolsviews.generate_qrcode),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

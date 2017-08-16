@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'api',
+    'tools',
+
     'rest_framework',
     'rest_framework_swagger',
     'gunicorn',
