@@ -17,13 +17,11 @@ class DictObject(models.Model):
 
 
 class System(DictObject):
-    class Meta:
-        verbose_name = "system"
+    pass
 
 
 class Category(DictObject):
-    class Meta:
-        verbose_name = "category"
+    pass
 
 
 class App(models.Model):
