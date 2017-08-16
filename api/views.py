@@ -70,6 +70,12 @@ def check_update(request):
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
+    for patch in patchs:
+        if (patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0 or
+            patch.status == Patch.STATUS_RELEASED):
+            patch.download_count = patch.download_count + 1
+            patch.supersave()
+
     released = list(patchs.filter(
         status=Patch.STATUS_RELEASED).values(
             'id', 'download_url'))
@@ -91,6 +97,6 @@ def check_update(request):
     for patch in patchs:
         if patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0:
             patch.pool_size = patch.pool_size - 1
-            patch.save()
+            patch.supersave()
         
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")

@@ -90,3 +90,5 @@ class Patch(models.Model):
                 self.serial_number = result["number"] + 1
             self.status = status
         super(Patch, self).save(*args, **kw)
+    def supersave(self, *args, **kw):
+        super(Patch, self).save(*args, **kw)

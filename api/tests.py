@@ -517,3 +517,71 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["results"]["released"]), 1)
         self.assertEqual(len(data["results"]["deleted"]), 1)
+    def test_patch_pool_size_and_download_count(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        pool_size = 10
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=pool_size)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        for i in range(pool_size*2):
+            url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_PRERELEASED) 
+        self.assertEqual(patch.pool_size, 0)
+        self.assertEqual(patch.download_count, pool_size)
+    def test_patch_download_count(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        pool_size = 10
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+
+        for i in range(pool_size*2):
+            url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_RELEASED) 
+        self.assertEqual(patch.download_count, pool_size*2)
