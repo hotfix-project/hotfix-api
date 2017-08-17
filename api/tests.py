@@ -232,20 +232,20 @@ class PatchTests(APITestCase):
 
 class CheckUpdateTests(APITestCase):
     def test_param_error_app_id(self):
-        url = '/check_update/'
+        url = '/check_update'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.content, b'["query param app_id is required"]')
+        self.assertEqual(response.content, b'{"detail":"query param app_id is required"}')
     def test_param_error_version(self):
-        url = '/check_update/?app_id=1'
+        url = '/check_update?app_id=1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.content, b'["query param version is required"]')
+        self.assertEqual(response.content, b'{"detail":"query param version is required"}')
     def test_app_not_found(self):
-        url = '/check_update/?app_id=1&version=1.1.1'
+        url = '/check_update?app_id=1&version=1.1.1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'["app is not found"]')
+        self.assertEqual(response.content, b'{"detail":"app is not found"}')
     def test_version_not_found(self):
         set_credentials(self.client)
 
@@ -261,10 +261,10 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         app_id = App.objects.get(name='iPos').id
 
-        url = '/check_update/?app_id=%s&version=1.1.1' % (app_id)
+        url = '/check_update?app_id=%s&version=1.1.1' % (app_id)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'["version is not found"]')
+        self.assertEqual(response.content, b'{"detail":"version is not found"}')
     def test_patch_not_found(self):
         set_credentials(self.client)
 
@@ -284,10 +284,10 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         version = Version.objects.get(name='1.1.1')
 
-        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'["patch is not found"]')
+        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
     def test_patch_not_found_2(self):
         set_credentials(self.client)
 
@@ -312,10 +312,10 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
 
-        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'["patch is not found"]')
+        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
     def test_patch(self):
         set_credentials(self.client)
 
@@ -340,6 +340,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
 
-        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)

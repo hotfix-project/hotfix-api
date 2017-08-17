@@ -50,22 +50,22 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
 def check_update(request):
     app_id = request.GET.get('app_id')
     if app_id is None:
-        return HttpResponseBadRequest('["query param app_id is required"]')
+        return HttpResponseBadRequest('{"detail":"query param app_id is required"}')
     version = page_num = request.GET.get('version')
     if version is None:
-        return HttpResponseBadRequest('["query param version is required"]')
+        return HttpResponseBadRequest('{"detail":"query param version is required"}')
     try:
         app = App.objects.get(id=app_id)
     except App.DoesNotExist:
-        return HttpResponseNotFound('["app is not found"]')
+        return HttpResponseNotFound('{"detail":"app is not found"}')
     try:
         version = Version.objects.get(app_id=app_id, name=version)
     except Version.DoesNotExist:
-        return HttpResponseNotFound('["version is not found"]')
+        return HttpResponseNotFound('{"detail":"version is not found"}')
     try:
         patch = Patch.objects.get(id=version.id, is_enable=True)
     except Patch.DoesNotExist:
-        return HttpResponseNotFound('["patch is not found"]')
+        return HttpResponseNotFound('{"detail":"patch is not found"}')
 
     data = {
         "id": app.id,
