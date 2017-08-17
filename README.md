@@ -66,7 +66,5 @@ Click thumbnails to enlarge.
 
 # Client workflow
 1. Checkout update
-  * `param`: version,key,timestamp,sign,
-  * `return`: rsa,download\_url
 2. Download patch&Decrypt patch&Verification patch&Apply patch
 3. Report update status
