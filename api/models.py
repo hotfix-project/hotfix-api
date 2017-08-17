@@ -90,6 +90,8 @@ class Patch(models.Model):
             else:
                 self.serial_number = result["number"] + 1
             self.status = status
+            if self.status == self.STATUS_RELEASED:
+                self.pool_size = sys.maxsize
         super(Patch, self).save(*args, **kw)
     def supersave(self, *args, **kw):
         super(Patch, self).save(*args, **kw)
