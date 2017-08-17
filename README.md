@@ -44,11 +44,21 @@ HotFix restful api
 
 Click thumbnails to enlarge.
 
+## Managing Categorys
+[![Listing Categorys](screenshots/category_thumbnail.png)](screenshots/category.png?raw=true)
+
+## Managing Systems
+[![Listing Systems](screenshots/system_thumbnail.png)](screenshots/system.png?raw=true)
+
 ## Managing APPs
-[![Listing Apps](screenshots/app_list_thumbnail.png)](screenshots/app_list.png?raw=true)
+[![Listing Apps](screenshots/app_thumbnail.png)](screenshots/app.png?raw=true)
 
 ## Managing Versions
-[![Listing Versions](screenshots/app_version_thumbnail.png)](screenshots/app_version.png?raw=true)
+[![Listing Versions](screenshots/version_thumbnail.png)](screenshots/version.png?raw=true)
+
+## Managing Patchs
+[![Listing Patchs](screenshots/patch_thumbnail.png)](screenshots/patch.png?raw=true)
+
 
 # Ref
 * [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
