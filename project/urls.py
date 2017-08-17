@@ -24,6 +24,7 @@ from rest_framework_swagger.views import get_swagger_view
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.authtoken import views as authviews
+from rest_auth.views import PasswordChangeView
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'categorys', apiviews.CategoryViewSet)
@@ -42,6 +43,7 @@ urlpatterns = [
     url(r'^$', schema_view),
     url(r'^check_update/$', apiviews.check_update),
     url(r'^qrcode/(.+)$', toolsviews.generate_qrcode),
+    url(r'^password/change/$', PasswordChangeView.as_view(), name='rest_password_change'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
