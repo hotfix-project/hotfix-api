@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^docs/', include_docs_urls(title='Hotfix API')),
     url(r'^$', schema_view),
+    url(r'^check_update/$', apiviews.check_update),
     url(r'^qrcode/(.+)$', toolsviews.generate_qrcode),
 ]
 

@@ -52,13 +52,14 @@ def create_version(client, app_id):
     return client.post(url, data, format='json')
  
 
-def create_patch(client, version_id):
+def create_patch(client, version_id, is_enable=False):
     url = '/api/patchs'
     data = {
         'version_id': 'http://127.0.0.1/api/versions/' + str(version_id),
         'desc': 'a patch', 
         'download_url': 'http://www.baidu.com/', 
         'size': 1000, 
+        'is_enable': is_enable
     }
     return client.post(url, data, format='json')
  
@@ -227,3 +228,118 @@ class PatchTests(APITestCase):
     def test_auth401_list_patch(self):
         response = list_patch(self.client)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class CheckUpdateTests(APITestCase):
+    def test_param_error_app_id(self):
+        url = '/check_update/'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.content, b'["query param app_id is required"]')
+    def test_param_error_version(self):
+        url = '/check_update/?app_id=1'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.content, b'["query param version is required"]')
+    def test_app_not_found(self):
+        url = '/check_update/?app_id=1&version=1.1.1'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.content, b'["app is not found"]')
+    def test_version_not_found(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app_id = App.objects.get(name='iPos').id
+
+        url = '/check_update/?app_id=%s&version=1.1.1' % (app_id)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.content, b'["version is not found"]')
+    def test_patch_not_found(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name='iPos')
+
+        response = create_version(self.client, app.id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name='1.1.1')
+
+        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.content, b'["patch is not found"]')
+    def test_patch_not_found_2(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name='iPos')
+
+        response = create_version(self.client, app.id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name='1.1.1')
+
+        response = create_patch(self.client, version.id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.content, b'["patch is not found"]')
+    def test_patch(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        response = create_app(self.client, category_id, system_id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name='iPos')
+
+        response = create_version(self.client, app.id)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name='1.1.1')
+
+        response = create_patch(self.client, version.id, is_enable=True)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
+
+        url = '/check_update/?app_id=%s&version=%s' % (app.id, version.name)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

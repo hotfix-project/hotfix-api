@@ -3,6 +3,8 @@ from rest_framework import viewsets, permissions
 from .serializers import CategorySerializer, SystemSerializer, AppSerializer
 from .serializers import VersionSerializer, PatchSerializer
 from rest_framework import filters
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
+import json
 
 
 class DefaultsMixin(object):
@@ -43,3 +45,39 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ('version_id',)
     ordering_fields = ('id', 'size', 'create_time', 'update_time', 'serial_number')
+
+
+def check_update(request):
+    app_id = request.GET.get('app_id')
+    if app_id is None:
+        return HttpResponseBadRequest('["query param app_id is required"]')
+    version = page_num = request.GET.get('version')
+    if version is None:
+        return HttpResponseBadRequest('["query param version is required"]')
+    try:
+        app = App.objects.get(id=app_id)
+    except App.DoesNotExist:
+        return HttpResponseNotFound('["app is not found"]')
+    try:
+        version = Version.objects.get(app_id=app_id, name=version)
+    except Version.DoesNotExist:
+        return HttpResponseNotFound('["version is not found"]')
+    try:
+        patch = Patch.objects.get(id=version.id, is_enable=True)
+    except Patch.DoesNotExist:
+        return HttpResponseNotFound('["patch is not found"]')
+
+    data = {
+        "id": app.id,
+        "rsa": app.rsa,
+        "version": {
+            "name": version.name,
+            "patch": {
+                "id": patch.id,
+                "size": patch.size,
+                "download_url": patch.download_url
+            }
+        }
+    }
+        
+    return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
