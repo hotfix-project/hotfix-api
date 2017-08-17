@@ -60,10 +60,6 @@ Click thumbnails to enlarge.
 [![Listing Patchs](screenshots/patch_thumbnail.png)](screenshots/patch.png?raw=true)
 
 
-# Ref
-* [Quickstart](http://www.django-rest-framework.org/tutorial/quickstart/) 
-* [Django Modle FieldType](https://docs.djangoproject.com/en/1.11/ref/models/fields/)
-
 # Client workflow
 1. Checkout update
 2. Download patch&Decrypt patch&Verification patch&Apply patch
