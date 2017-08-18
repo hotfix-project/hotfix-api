@@ -51,13 +51,15 @@ class Version(models.Model):
 
 class Patch(models.Model):
     STATUS_WAIT = 0
-    STATUS_ONLINE = 1
-    STATUS_OFFLINE = 2
+    STATUS_RELEASE = 1
+    STATUS_STOP = 2
+    STATUS_GARY = 3
 
     STATUS_CHOICES = (
         (STATUS_WAIT, _('Wait')),
-        (STATUS_ONLINE, _('Online')),
-        (STATUS_OFFLINE, _('Offline')),
+        (STATUS_RELEASE, _('Release')),
+        (STATUS_STOP, _('Stop')),
+        (STATUS_GARY, _('Gary')),
     )
 
     id = models.AutoField(primary_key=True)
@@ -78,13 +80,13 @@ class Patch(models.Model):
         return str(self.id)
 
     def save(self, *args, **kw):
-        if self.status == self.STATUS_ONLINE:
+        if self.status == self.STATUS_RELEASE:
             patchs = Patch.objects.all()
-            patchs.update(status=self.STATUS_OFFLINE)
+            patchs.update(status=self.STATUS_STOP)
             result = patchs.aggregate(number=Max('serial_number'))
             if result["number"] is None:
                 self.serial_number = 1
             else:
                 self.serial_number = result["number"] + 1
-            self.status = self.STATUS_ONLINE
+            self.status = self.STATUS_RELEASE
         super(Patch, self).save(*args, **kw)
