@@ -73,7 +73,6 @@ class Patch(models.Model):
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAIT)
-    is_gray = models.BooleanField(default=False)
     pool_size = models.IntegerField(default=0)
 
     def __str__(self):

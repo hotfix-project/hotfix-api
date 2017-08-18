@@ -33,5 +33,5 @@ class PatchSerializer(serializers.HyperlinkedModelSerializer):
             'id', 'version_id', 'size', 'desc',
             'download_url', 'serial_number',
             'status', 'download_count', 'apply_count',
-            'is_gray', 'pool_size', 'create_time',
+            'pool_size', 'create_time',
         )
