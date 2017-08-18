@@ -63,7 +63,7 @@ class Patch(models.Model):
     id = models.AutoField(primary_key=True)
     version_id = models.ForeignKey(Version)
     desc = models.CharField(max_length=1024, null=False)
-    serial_number = models.IntegerField(default=0)
+    serial_number = models.IntegerField(default=1)
     download_url = models.URLField(null=False)
     size = models.IntegerField(null=False)
     create_time = models.DateTimeField(auto_now_add=True)
