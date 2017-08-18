@@ -45,12 +45,12 @@ class VersionAdmin(admin.ModelAdmin):
 class PatchAdmin(admin.ModelAdmin):
     fields = [
         'version_id', 'size', 'desc', 'download_url',
-        'serial_number', 'is_enable', 'download_count',
+        'serial_number', 'status', 'download_count',
         'apply_count', 'is_gray', 'pool_size'
     ]
     list_display = (
         'version_id', 'size', 'desc', 'serial_number',
-        'is_enable', 'is_gray', 'create_time', 'update_time'
+        'status', 'is_gray', 'create_time', 'update_time'
     )
     list_filter = [
         'version_id__name',

@@ -52,14 +52,14 @@ def create_version(client, app_id):
     return client.post(url, data, format='json')
  
 
-def create_patch(client, version_id, is_enable=False):
+def create_patch(client, version_id, status=0):
     url = '/api/patchs'
     data = {
         'version_id': 'http://127.0.0.1/api/versions/' + str(version_id),
         'desc': 'a patch', 
         'download_url': 'http://www.baidu.com/', 
         'size': 1000, 
-        'is_enable': is_enable
+        'status': status
     }
     return client.post(url, data, format='json')
  
@@ -335,7 +335,7 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         version = Version.objects.get(name='1.1.1')
 
-        response = create_patch(self.client, version.id, is_enable=True)
+        response = create_patch(self.client, version.id, status=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")

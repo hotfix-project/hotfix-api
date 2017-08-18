@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Max
+from django.utils.translation import ugettext_lazy as _
 import uuid
 # Create your models here.
 
@@ -49,6 +50,16 @@ class Version(models.Model):
 
 
 class Patch(models.Model):
+    STATUS_WAIT = 0
+    STATUS_ONLINE = 1
+    STATUS_OFFLINE = 2
+
+    STATUS_CHOICES = (
+        (STATUS_WAIT, _('Wait')),
+        (STATUS_ONLINE, _('Online')),
+        (STATUS_OFFLINE, _('Offline')),
+    )
+
     id = models.AutoField(primary_key=True)
     version_id = models.ForeignKey(Version)
     desc = models.CharField(max_length=1024, null=False)
@@ -59,7 +70,7 @@ class Patch(models.Model):
     update_time = models.DateTimeField(auto_now=True)
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
-    is_enable = models.BooleanField(default=False)
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAIT)
     is_gray = models.BooleanField(default=False)
     pool_size = models.IntegerField(default=0)
 
@@ -67,13 +78,13 @@ class Patch(models.Model):
         return str(self.id)
 
     def save(self, *args, **kw):
-        if self.is_enable:
+        if self.status == self.STATUS_ONLINE:
             patchs = Patch.objects.all()
-            patchs.update(is_enable=False)
+            patchs.update(status=self.STATUS_OFFLINE)
             result = patchs.aggregate(number=Max('serial_number'))
             if result["number"] is None:
                 self.serial_number = 1
             else:
                 self.serial_number = result["number"] + 1
-            self.is_enable = True
+            self.status = self.STATUS_ONLINE
         super(Patch, self).save(*args, **kw)

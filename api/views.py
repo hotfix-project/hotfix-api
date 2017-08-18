@@ -63,7 +63,7 @@ def check_update(request):
     except Version.DoesNotExist:
         return HttpResponseNotFound('{"detail":"version is not found"}')
     try:
-        patch = Patch.objects.get(id=version.id, is_enable=True)
+        patch = Patch.objects.get(id=version.id, status=1)
     except Patch.DoesNotExist:
         return HttpResponseNotFound('{"detail":"patch is not found"}')
 
