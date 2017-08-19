@@ -62,6 +62,9 @@ Click thumbnails to enlarge.
 [![Listing Patchs](screenshots/patch_thumbnail.png)](screenshots/patch.png?raw=true)
 
 
+## Security
+Only expose the api **check_update** to Internet
+
 # Client workflow
 1. Check update
 2. Download patch&Decrypt patch&Verification patch&Apply patch
