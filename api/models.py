@@ -81,7 +81,7 @@ class Patch(models.Model):
 
     def save(self, *args, **kw):
         status = self.status
-        if self.status in (self.STATUS_RELEASED, self.STATUS_PRERELEASED):
+        if self.status in (self.STATUS_RELEASED, self.STATUS_PRERELEASED, self.STATUS_WAITING):
             patchs = Patch.objects.all()
             patchs.filter(status__gt=self.STATUS_WAITING).update(status=self.STATUS_STOPED)
             result = patchs.aggregate(number=Max('serial_number'))

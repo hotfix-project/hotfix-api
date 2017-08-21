@@ -795,3 +795,48 @@ class CheckReportTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(patch["pool_size"], sys.maxsize)
+    def test_patch_serial_number(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_WAITING)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        patch = json.loads(response.content)
+        serial_number = patch["serial_number"]
+        self.assertEqual(serial_number, 1)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        patch = json.loads(response.content)
+        serial_number = patch["serial_number"]
+        self.assertEqual(serial_number, 2)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        patch = json.loads(response.content)
+        serial_number = patch["serial_number"]
+        self.assertEqual(serial_number, 3)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_WAITING)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        patch = json.loads(response.content)
+        serial_number = patch["serial_number"]
+        self.assertEqual(serial_number, 4)
+
