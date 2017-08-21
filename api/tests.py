@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 import json
 import uuid
+import sys
 
 def set_credentials(client):
     user = User.objects.create_superuser('admin', 'admin@admin.com', '123456@admin')
@@ -53,7 +54,7 @@ def create_version(client, app_id, version_name):
     return client.post(url, data, format='json')
  
 
-def create_patch(client, version_id, status=Patch.STATUS_WAITING, pool_size=0):
+def create_patch(client, version_id, status=Patch.STATUS_WAITING, pool_size=sys.maxsize):
     url = '/api/patchs'
     data = {
         'version_id': 'http://127.0.0.1/api/versions/' + str(version_id),
@@ -768,3 +769,29 @@ class CheckReportTests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"]) 
         self.assertEqual(patch.apply_count, apply_count)
+    def test_patch_pool_size_default(self):
+        set_credentials(self.client)
+
+        response = create_category(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        category_id = Category.objects.get(name='Finance').id
+
+        response = create_system(self.client)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        system_id = System.objects.get(name='Android').id
+
+        app_name = uuid.uuid4().hex
+        response = create_app(self.client, category_id, system_id, app_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        app = App.objects.get(name=app_name)
+
+        version_name = uuid.uuid4().hex
+        response = create_version(self.client, app.id, version_name)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        version = Version.objects.get(name=version_name)
+
+        response = create_patch(self.client, version.id, status=Patch.STATUS_WAITING)
+        patch = json.loads(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Patch.objects.count(), 1)
+        self.assertEqual(patch["pool_size"], sys.maxsize)
