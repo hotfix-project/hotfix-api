@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 import uuid
+import sys
 # Create your models here.
 
 
@@ -73,7 +74,7 @@ class Patch(models.Model):
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAITING)
-    pool_size = models.IntegerField(default=0)
+    pool_size = models.BigIntegerField(default=sys.maxsize)
 
     def __str__(self):
         return str(self.id)

@@ -50,7 +50,7 @@ class PatchAdmin(admin.ModelAdmin):
     ]
     list_display = (
         'version_id', 'size', 'desc', 'serial_number',
-        'status', 'create_time', 'update_time'
+        'status', 'pool_size', 'create_time', 'update_time'
     )
     list_filter = [
         'version_id__name',
