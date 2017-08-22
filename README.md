@@ -7,6 +7,7 @@
 3. Using external storage services
 
 # Requirements
+* CentOS7
 * Python 3.6
 * Django 
   * 1.10.7
