@@ -26,6 +26,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.authtoken import views as authviews
 from rest_auth.views import PasswordChangeView
 
+
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'categorys', apiviews.CategoryViewSet)
 router.register(r'systems', apiviews.SystemViewSet)
@@ -37,10 +38,10 @@ schema_view = get_swagger_view(title='Hotfix API')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/', include(router.urls)),
+    url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^docs/', include_docs_urls(title='Hotfix API')),
-    url(r'^$', schema_view),
+    url(r'^swagger/$', schema_view),
     url(r'^check_update$', apiviews.check_update),
     url(r'^report_update$', apiviews.report_update),
     url(r'^qrcode/(.+)$', toolsviews.generate_qrcode),
