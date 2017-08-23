@@ -71,12 +71,15 @@ def check_update(request):
     deletes = patchs.filter(status=Patch.STATUS_DELETED)
 
     data = {
-        "id": apps[0].id,
-        "version": versions[0].name,
-        "rsa": apps[0].rsa,
-        "results": {
-            "released": list(releases.values('id', 'download_url')),
-            "deleted": list(deletes.values('id')),
+        "message": "ok",
+        "result": {
+            "id": apps[0].id,
+            "version": versions[0].name,
+            "rsa": apps[0].rsa,
+            "patch": {
+                "released": list(releases.values('id', 'download_url')),
+                "deleted": list(deletes.values('id')),
+            }
         }
     }
 

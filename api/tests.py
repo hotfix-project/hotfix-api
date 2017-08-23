@@ -301,8 +301,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
     def test_patch_not_found_2(self):
         set_credentials(self.client)
 
@@ -333,8 +333,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
     def test_patch_released(self):
         set_credentials(self.client)
 
@@ -365,8 +365,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 1)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 1)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
     def test_patch_prereleased(self):
         set_credentials(self.client)
 
@@ -399,15 +399,15 @@ class CheckUpdateTests(APITestCase):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
-            self.assertEqual(len(data["results"]["released"]), 1)
-            self.assertEqual(len(data["results"]["deleted"]), 0)
+            self.assertEqual(len(data["result"]["patch"]["released"]), 1)
+            self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 0)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
     def test_patch_released_prereleased(self):
         set_credentials(self.client)
 
@@ -441,8 +441,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 1)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 1)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
     def test_patch_prereleased_released(self):
         set_credentials(self.client)
 
@@ -476,8 +476,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 1)
-        self.assertEqual(len(data["results"]["deleted"]), 0)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 1)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
  
     def test_patch_deleted(self):
         set_credentials(self.client)
@@ -516,8 +516,8 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
-        self.assertEqual(len(data["results"]["released"]), 1)
-        self.assertEqual(len(data["results"]["deleted"]), 1)
+        self.assertEqual(len(data["result"]["patch"]["released"]), 1)
+        self.assertEqual(len(data["result"]["patch"]["deleted"]), 1)
     def test_patch_pool_size_and_download_count(self):
         set_credentials(self.client)
 
