@@ -8,6 +8,15 @@ from django.db import transaction
 from django.db.models import F
 import json
 
+def resthub_spec(func):  
+    def wrapper(*args,**kwargs):  
+        response = func(*args,**kwargs)  
+        status_code = response.status_code
+        content = json.loads(response.content)
+        content["status"] = "%s" % (status_code)
+        return HttpResponse(json.dumps(content, ensure_ascii=False), content_type="application/json")
+    return wrapper
+
 
 class DefaultsMixin(object):
     permission_classes = (
