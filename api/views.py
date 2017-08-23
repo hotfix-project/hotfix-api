@@ -52,11 +52,11 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
 @transaction.atomic
 def check_update(request):
     app_id = request.GET.get('app_id')
-    if app_id is None:
-        return HttpResponseBadRequest('{"message":"query param app_id is required"}')
+    if app_id is None or not isinstance(app_id, (str)) or not app_id.isdigit():
+        return HttpResponseBadRequest('{"message":"query param app_id is required or incorrect type"}')
     version = request.GET.get('version')
-    if version is None:
-        return HttpResponseBadRequest('{"message":"query param version is required"}')
+    if version is None or not isinstance(version, (str)):
+        return HttpResponseBadRequest('{"message":"query param version is required or incorrect type"}')
     apps = App.objects.filter(id=app_id)
     if apps.count() == 0:
         return HttpResponseNotFound('{"message":"app is not found"}')
@@ -93,8 +93,8 @@ def check_update(request):
 @transaction.atomic
 def report_update(request):
     patch_id = request.GET.get('patch_id')
-    if patch_id is None:
-        return HttpResponseBadRequest('{"message":"query param patch_id is required"}')
+    if patch_id is None or not isinstance(patch_id, (str)) or not patch_id.isdigit():
+        return HttpResponseBadRequest('{"message":"query param patch_id is required or incorrect type"}')
     patchs = Patch.objects.select_for_update().filter(id=patch_id)
     if len(patchs) == 0:
         return HttpResponseNotFound('{"message":"patch is not found"}')
