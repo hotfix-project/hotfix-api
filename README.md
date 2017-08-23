@@ -64,4 +64,4 @@ Click thumbnails to enlarge.
 
 
 ## Security
-Only expose the api **check_update** and **report_update** to Internet
+Do Not expose APIs mentioned above to Internet.
