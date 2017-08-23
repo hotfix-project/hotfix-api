@@ -53,16 +53,16 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
 def check_update(request):
     app_id = request.GET.get('app_id')
     if app_id is None:
-        return HttpResponseBadRequest('{"detail":"query param app_id is required"}')
+        return HttpResponseBadRequest('{"message":"query param app_id is required"}')
     version = request.GET.get('version')
     if version is None:
-        return HttpResponseBadRequest('{"detail":"query param version is required"}')
+        return HttpResponseBadRequest('{"message":"query param version is required"}')
     apps = App.objects.filter(id=app_id)
     if apps.count() == 0:
-        return HttpResponseNotFound('{"detail":"app is not found"}')
+        return HttpResponseNotFound('{"message":"app is not found"}')
     versions = Version.objects.filter(app_id=app_id, name=version)
     if versions.count() == 0:
-        return HttpResponseNotFound('{"detail":"version is not found"}')
+        return HttpResponseNotFound('{"message":"version is not found"}')
     selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
     patchs = Patch.objects.select_for_update().filter(version_id=versions[0].id, status__in=selected)
 
@@ -91,13 +91,13 @@ def check_update(request):
 def report_update(request):
     patch_id = request.GET.get('patch_id')
     if patch_id is None:
-        return HttpResponseBadRequest('{"detail":"query param patch_id is required"}')
+        return HttpResponseBadRequest('{"message":"query param patch_id is required"}')
     patchs = Patch.objects.select_for_update().filter(id=patch_id)
     if len(patchs) == 0:
-        return HttpResponseNotFound('{"detail":"patch is not found"}')
+        return HttpResponseNotFound('{"message":"patch is not found"}')
 
     for patch in patchs:
         patch.apply_count = patch.apply_count + 1
         patch.supersave()
 
-    return HttpResponse('{"detail":"ok"}')
+    return HttpResponse('{"message":"ok"}')

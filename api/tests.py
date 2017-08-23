@@ -245,17 +245,17 @@ class CheckUpdateTests(APITestCase):
         url = '/check_update'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.content, b'{"detail":"query param app_id is required"}')
+        self.assertEqual(response.content, b'{"message":"query param app_id is required"}')
     def test_param_error_version(self):
         url = '/check_update?app_id=1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.content, b'{"detail":"query param version is required"}')
+        self.assertEqual(response.content, b'{"message":"query param version is required"}')
     def test_app_not_found(self):
         url = '/check_update?app_id=1&version=1.1.1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'{"detail":"app is not found"}')
+        self.assertEqual(response.content, b'{"message":"app is not found"}')
     def test_version_not_found(self):
         set_credentials(self.client)
 
@@ -275,7 +275,7 @@ class CheckUpdateTests(APITestCase):
         url = '/check_update?app_id=%s&version=1.1.1' % (app_id)
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'{"detail":"version is not found"}')
+        self.assertEqual(response.content, b'{"message":"version is not found"}')
     def test_patch_not_found(self):
         set_credentials(self.client)
 
@@ -593,12 +593,12 @@ class CheckReportTests(APITestCase):
         url = '/report_update'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.content, b'{"detail":"query param patch_id is required"}')
+        self.assertEqual(response.content, b'{"message":"query param patch_id is required"}')
     def test_patch_not_found(self):
         url = '/report_update?patch_id=0'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertEqual(response.content, b'{"detail":"patch is not found"}')
+        self.assertEqual(response.content, b'{"message":"patch is not found"}')
     def test_patch_wating(self):
         set_credentials(self.client)
 
