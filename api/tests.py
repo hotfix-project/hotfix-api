@@ -860,17 +860,23 @@ class CheckReportTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         version = Version.objects.get(name=version_name)
 
-        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED, pool_size=100)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.filter(
             status__in=(Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED)).count(), 1)
+        data = json.loads(response.content)
+        self.assertEqual(data["pool_size"], sys.maxsize)
 
-        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED)
+        response = create_patch(self.client, version.id, status=Patch.STATUS_PRERELEASED, pool_size=100)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.filter(
             status__in=(Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED)).count(), 1)
+        data = json.loads(response.content)
+        self.assertEqual(data["pool_size"], 100)
 
-        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED)
+        response = create_patch(self.client, version.id, status=Patch.STATUS_RELEASED, pool_size=100)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.filter(
             status__in=(Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED)).count(), 1)
+        data = json.loads(response.content)
+        self.assertEqual(data["pool_size"], sys.maxsize)
