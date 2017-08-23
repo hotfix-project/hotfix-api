@@ -64,9 +64,4 @@ Click thumbnails to enlarge.
 
 
 ## Security
-Only expose the api **check_update** and **report_update** to Internet
-
-# Client workflow
-1. Check update
-2. Download patch&Decrypt patch&Verification patch&Apply patch
-3. Report update status
+Do Not expose APIs mentioned above to Internet.
