@@ -551,7 +551,7 @@ class CheckUpdateTests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_PRERELEASED) 
-        self.assertEqual(patch.pool_size, 0)
+        self.assertEqual(patch.pool_size, pool_size)
         self.assertEqual(patch.download_count, pool_size)
     def test_patch_download_count(self):
         set_credentials(self.client)

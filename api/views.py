@@ -5,6 +5,7 @@ from .serializers import VersionSerializer, PatchSerializer
 from rest_framework import filters
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.db import transaction
+from django.db.models import F
 import json
 
 
@@ -56,49 +57,33 @@ def check_update(request):
     version = request.GET.get('version')
     if version is None:
         return HttpResponseBadRequest('{"detail":"query param version is required"}')
-    try:
-        app = App.objects.get(id=app_id)
-    except App.DoesNotExist:
+    apps = App.objects.filter(id=app_id)
+    if apps.count() == 0:
         return HttpResponseNotFound('{"detail":"app is not found"}')
-    try:
-        version = Version.objects.get(app_id=app_id, name=version)
-    except Version.DoesNotExist:
+    versions = Version.objects.filter(app_id=app_id, name=version)
+    if versions.count() == 0:
         return HttpResponseNotFound('{"detail":"version is not found"}')
-    try:
-        selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
-        patchs = Patch.objects.select_for_update().filter(version_id=version.id, status__in=selected)
-    except Patch.DoesNotExist:
-        return HttpResponseNotFound('{"detail":"patch is not found"}')
+    selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
+    patchs = Patch.objects.select_for_update().filter(version_id=versions[0].id, status__in=selected)
 
-    for patch in patchs:
-        if (patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0 or
-            patch.status == Patch.STATUS_RELEASED):
-            patch.download_count = patch.download_count + 1
-            patch.supersave()
+    releases = patchs.filter(
+        status__in=(Patch.STATUS_PRERELEASED, Patch.STATUS_RELEASED), download_count__lt=F('pool_size'))
+    deletes = patchs.filter(status=Patch.STATUS_DELETED)
 
-    released = list(patchs.filter(
-        status=Patch.STATUS_RELEASED).values(
-            'id', 'download_url'))
-    prereleased = list(patchs.filter(
-        status=Patch.STATUS_PRERELEASED, pool_size__gt=0).values(
-            'id', 'download_url'))
-    deleted = list(patchs.filter(
-        status=Patch.STATUS_DELETED).values('id'))
     data = {
-        "id": app.id,
-        "version": version.name,
-        "rsa": app.rsa,
+        "id": apps[0].id,
+        "version": versions[0].name,
+        "rsa": apps[0].rsa,
         "results": {
-            "released": released + prereleased,
-            "deleted": deleted
+            "released": list(releases.values('id', 'download_url')),
+            "deleted": list(deletes.values('id')),
         }
     }
 
-    for patch in patchs:
-        if patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0:
-            patch.pool_size = patch.pool_size - 1
-            patch.supersave()
-        
+    for patch in releases:
+        patch.download_count = patch.download_count + 1
+        patch.supersave()
+
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
 
 
