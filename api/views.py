@@ -5,7 +5,17 @@ from .serializers import VersionSerializer, PatchSerializer
 from rest_framework import filters
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseNotFound
 from django.db import transaction
+from django.db.models import F
 import json
+
+def resthub_spec(func):  
+    def wrapper(*args,**kwargs):  
+        response = func(*args,**kwargs)  
+        status_code = response.status_code
+        content = json.loads(response.content)
+        content["status"] = "%s" % (status_code)
+        return HttpResponse(json.dumps(content, ensure_ascii=False), content_type="application/json")
+    return wrapper
 
 
 class DefaultsMixin(object):
@@ -51,68 +61,55 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
 @transaction.atomic
 def check_update(request):
     app_id = request.GET.get('app_id')
-    if app_id is None:
-        return HttpResponseBadRequest('{"detail":"query param app_id is required"}')
+    if app_id is None or not isinstance(app_id, (str)) or not app_id.isdigit():
+        return HttpResponseBadRequest('{"message":"query param app_id is required or incorrect type"}')
     version = request.GET.get('version')
-    if version is None:
-        return HttpResponseBadRequest('{"detail":"query param version is required"}')
-    try:
-        app = App.objects.get(id=app_id)
-    except App.DoesNotExist:
-        return HttpResponseNotFound('{"detail":"app is not found"}')
-    try:
-        version = Version.objects.get(app_id=app_id, name=version)
-    except Version.DoesNotExist:
-        return HttpResponseNotFound('{"detail":"version is not found"}')
-    try:
-        selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
-        patchs = Patch.objects.select_for_update().filter(version_id=version.id, status__in=selected)
-    except Patch.DoesNotExist:
-        return HttpResponseNotFound('{"detail":"patch is not found"}')
+    if version is None or not isinstance(version, (str)):
+        return HttpResponseBadRequest('{"message":"query param version is required or incorrect type"}')
+    apps = App.objects.filter(id=app_id)
+    if apps.count() == 0:
+        return HttpResponseNotFound('{"message":"app is not found"}')
+    versions = Version.objects.filter(app_id=app_id, name=version)
+    if versions.count() == 0:
+        return HttpResponseNotFound('{"message":"version is not found"}')
+    selected = (Patch.STATUS_RELEASED, Patch.STATUS_PRERELEASED, Patch.STATUS_DELETED)
+    patchs = Patch.objects.select_for_update().filter(version_id=versions[0].id, status__in=selected)
 
-    for patch in patchs:
-        if (patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0 or
-            patch.status == Patch.STATUS_RELEASED):
-            patch.download_count = patch.download_count + 1
-            patch.supersave()
+    releases = patchs.filter(
+        status__in=(Patch.STATUS_PRERELEASED, Patch.STATUS_RELEASED), download_count__lt=F('pool_size'))
+    deletes = patchs.filter(status=Patch.STATUS_DELETED)
 
-    released = list(patchs.filter(
-        status=Patch.STATUS_RELEASED).values(
-            'id', 'download_url'))
-    prereleased = list(patchs.filter(
-        status=Patch.STATUS_PRERELEASED, pool_size__gt=0).values(
-            'id', 'download_url'))
-    deleted = list(patchs.filter(
-        status=Patch.STATUS_DELETED).values('id'))
     data = {
-        "id": app.id,
-        "version": version.name,
-        "rsa": app.rsa,
-        "results": {
-            "released": released + prereleased,
-            "deleted": deleted
+        "message": "ok",
+        "result": {
+            "id": apps[0].id,
+            "version": versions[0].name,
+            "rsa": apps[0].rsa,
+            "patch": {
+                "released": list(releases.values('id', 'download_url')),
+                "deleted": list(deletes.values('id')),
+            }
         }
     }
 
-    for patch in patchs:
-        if patch.status == Patch.STATUS_PRERELEASED and patch.pool_size > 0:
-            patch.pool_size = patch.pool_size - 1
-            patch.supersave()
-        
+    for patch in releases:
+        patch.download_count = patch.download_count + 1
+        patch.supersave()
+
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
 
 
 @transaction.atomic
 def report_update(request):
     patch_id = request.GET.get('patch_id')
-    if patch_id is None:
-        return HttpResponseBadRequest('{"detail":"query param patch_id is required"}')
+    if patch_id is None or not isinstance(patch_id, (str)) or not patch_id.isdigit():
+        return HttpResponseBadRequest('{"message":"query param patch_id is required or incorrect type"}')
     patchs = Patch.objects.select_for_update().filter(id=patch_id)
     if len(patchs) == 0:
-        return HttpResponseNotFound('{"detail":"patch is not found"}')
+        return HttpResponseNotFound('{"message":"patch is not found"}')
 
     for patch in patchs:
         patch.apply_count = patch.apply_count + 1
         patch.supersave()
 
-    return HttpResponse('{"detail":"ok"}')
+    return HttpResponse('{"message":"ok"}')

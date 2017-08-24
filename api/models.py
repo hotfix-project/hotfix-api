@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models import Max
 from django.utils.translation import ugettext_lazy as _
 import uuid
+import sys
 # Create your models here.
 
 
@@ -28,7 +29,7 @@ class App(models.Model):
     id = models.AutoField(primary_key=True)
     category_id = models.ForeignKey(Category)
     system_id = models.ForeignKey(System)
-    name = models.CharField(max_length=64, null=False, unique=True)
+    name = models.CharField(max_length=64, null=False)
     key = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     secret = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     rsa = models.TextField(null=False)
@@ -36,15 +37,21 @@ class App(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = (("category_id", "system_id", "name"),)
+
 
 class Version(models.Model):
     id = models.AutoField(primary_key=True)
     app_id = models.ForeignKey(App)
-    name = models.CharField(max_length=64, null=False, unique=True)
+    name = models.CharField(max_length=64, null=False)
     create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = (("app_id", "name"),)
 
 
 class Patch(models.Model):
@@ -73,14 +80,14 @@ class Patch(models.Model):
     download_count = models.IntegerField(default=0)
     apply_count = models.IntegerField(default=0)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=STATUS_WAITING)
-    pool_size = models.IntegerField(default=0)
+    pool_size = models.BigIntegerField(default=sys.maxsize)
 
     def __str__(self):
         return str(self.id)
 
     def save(self, *args, **kw):
         status = self.status
-        if self.status in (self.STATUS_RELEASED, self.STATUS_PRERELEASED):
+        if self.status in (self.STATUS_RELEASED, self.STATUS_PRERELEASED, self.STATUS_WAITING):
             patchs = Patch.objects.all()
             patchs.filter(status__gt=self.STATUS_WAITING).update(status=self.STATUS_STOPED)
             result = patchs.aggregate(number=Max('serial_number'))
@@ -89,6 +96,8 @@ class Patch(models.Model):
             else:
                 self.serial_number = result["number"] + 1
             self.status = status
+            if self.status == self.STATUS_RELEASED:
+                self.pool_size = sys.maxsize
         super(Patch, self).save(*args, **kw)
     def supersave(self, *args, **kw):
         super(Patch, self).save(*args, **kw)
