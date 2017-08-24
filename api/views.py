@@ -40,7 +40,8 @@ class AppViewSet(DefaultsMixin, viewsets.ModelViewSet):
     serializer_class = AppSerializer
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ('category_id', 'system_id')
-    ordering_fields = ('id', 'name')
+    ordering_fields = ('id', 'name', 'system_id', 'category_id')
+    ordering = ('name', 'system_id', 'category_id')
 
 
 class VersionViewSet(DefaultsMixin, viewsets.ModelViewSet):
@@ -49,6 +50,7 @@ class VersionViewSet(DefaultsMixin, viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ('app_id',)
     ordering_fields = ('id', 'name', 'create_time')
+    ordering = ('-name', '-create_time')
 
 
 class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
