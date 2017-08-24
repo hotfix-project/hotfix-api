@@ -61,6 +61,7 @@ class PatchViewSet(DefaultsMixin, viewsets.ModelViewSet):
     ordering_fields = ('id', 'size', 'create_time', 'update_time', 'serial_number')
 
 
+@resthub_spec
 @transaction.atomic
 def check_update(request):
     app_id = request.GET.get('app_id')
@@ -102,6 +103,7 @@ def check_update(request):
     return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
 
 
+@resthub_spec
 @transaction.atomic
 def report_update(request):
     patch_id = request.GET.get('patch_id')
