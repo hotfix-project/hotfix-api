@@ -99,5 +99,6 @@ class Patch(models.Model):
             if self.status == self.STATUS_RELEASED:
                 self.pool_size = sys.maxsize
         super(Patch, self).save(*args, **kw)
+
     def supersave(self, *args, **kw):
         super(Patch, self).save(*args, **kw)

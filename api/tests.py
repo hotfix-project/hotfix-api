@@ -1,20 +1,18 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import Category, System, App, Version, Patch
-from rest_framework.authtoken.models import Token
-from rest_framework.test import APIClient
 from django.contrib.auth.models import User
 import json
 import uuid
 import sys
+
 
 def set_credentials(client):
     user = User.objects.create_superuser('admin', 'admin@admin.com', '123456@admin')
     user.save()
 
     url = '/api-token-auth/'
-    data = {'username': 'admin', 'password':'123456@admin'}
+    data = {'username': 'admin', 'password': '123456@admin'}
     response = client.post(url, data, format='json')
     token = json.loads(response.content)['token']
     client.credentials(HTTP_AUTHORIZATION='Token ' + token)
@@ -37,35 +35,35 @@ def create_app(client, category_id, system_id, name):
     data = {
         'name': name,
         'category_id': 'http://127.0.0.1/categorys/' + str(category_id),
-        'system_id': 'http://127.0.0.1/systems/' + str(system_id), 
+        'system_id': 'http://127.0.0.1/systems/' + str(system_id),
         'key': 'key',
         'secret': 'secret',
         'rsa': 'rsa'
     }
     return client.post(url, data, format='json')
- 
+
 
 def create_version(client, app_id, version_name):
     url = '/versions'
     data = {
         'app_id': 'http://127.0.0.1/apps/' + str(app_id),
-        'name': version_name, 
+        'name': version_name,
     }
     return client.post(url, data, format='json')
- 
+
 
 def create_patch(client, version_id, status=Patch.STATUS_WAITING, pool_size=sys.maxsize):
     url = '/patchs'
     data = {
         'version_id': 'http://127.0.0.1/versions/' + str(version_id),
-        'desc': 'a patch', 
-        'download_url': 'http://www.baidu.com/', 
-        'size': 1000, 
+        'desc': 'a patch',
+        'download_url': 'http://www.baidu.com/',
+        'size': 1000,
         'status': status,
         'pool_size': pool_size,
     }
     return client.post(url, data, format='json')
- 
+
 
 def list_category(client):
     url = '/categorys'
@@ -98,7 +96,7 @@ class CategoryTests(APITestCase):
         Ensure we can create a new Category object.
         """
         set_credentials(self.client)
-        
+
         response = create_category(self.client)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Category.objects.count(), 1)
@@ -246,36 +244,43 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param app_id is required or incorrect type"}')
+
     def test_param_error_app_id_400b(self):
         url = '/check_update?app_id'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param app_id is required or incorrect type"}')
+
     def test_param_error_app_id_400c(self):
         url = '/check_update?app_id='
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param app_id is required or incorrect type"}')
+
     def test_param_error_app_id_400d(self):
         url = '/check_update?app_id=abc'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param app_id is required or incorrect type"}')
+
     def test_param_error_app_id_400e(self):
         url = '/check_update?app_id=123abc'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param app_id is required or incorrect type"}')
+
     def test_param_error_version(self):
         url = '/check_update?app_id=1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param version is required or incorrect type"}')
+
     def test_app_not_found(self):
         url = '/check_update?app_id=1&version=1.1.1'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.content, b'{"message":"app is not found"}')
+
     def test_version_not_found(self):
         set_credentials(self.client)
 
@@ -296,6 +301,7 @@ class CheckUpdateTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.content, b'{"message":"version is not found"}')
+
     def test_patch_not_found(self):
         set_credentials(self.client)
 
@@ -323,6 +329,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
+
     def test_patch_not_found_2(self):
         set_credentials(self.client)
 
@@ -355,6 +362,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
+
     def test_patch_released(self):
         set_credentials(self.client)
 
@@ -387,6 +395,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
+
     def test_patch_prereleased(self):
         set_credentials(self.client)
 
@@ -428,6 +437,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
+
     def test_patch_released_prereleased(self):
         set_credentials(self.client)
 
@@ -463,6 +473,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
+
     def test_patch_prereleased_released(self):
         set_credentials(self.client)
 
@@ -498,7 +509,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
- 
+
     def test_patch_deleted(self):
         set_credentials(self.client)
 
@@ -538,6 +549,7 @@ class CheckUpdateTests(APITestCase):
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 1)
+
     def test_patch_pool_size_and_download_count(self):
         set_credentials(self.client)
 
@@ -565,14 +577,15 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(Patch.objects.get(desc='a patch').desc, "a patch")
 
-        for i in range(pool_size*2):
+        for i in range(pool_size * 2):
             url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_PRERELEASED) 
+        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_PRERELEASED)
         self.assertEqual(patch.pool_size, pool_size)
         self.assertEqual(patch.download_count, pool_size)
+
     def test_patch_download_count(self):
         set_credentials(self.client)
 
@@ -599,13 +612,13 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
 
-        for i in range(pool_size*2):
+        for i in range(pool_size * 2):
             url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_RELEASED) 
-        self.assertEqual(patch.download_count, pool_size*2)
+        patch = Patch.objects.get(version_id=version.id, status=Patch.STATUS_RELEASED)
+        self.assertEqual(patch.download_count, pool_size * 2)
 
 
 class CheckReportTests(APITestCase):
@@ -614,31 +627,37 @@ class CheckReportTests(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param patch_id is required or incorrect type"}')
+
     def test_param_error_patch_id_400b(self):
         url = '/report_update?patch_id'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param patch_id is required or incorrect type"}')
+
     def test_param_error_patch_id_400c(self):
         url = '/report_update?patch_id='
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param patch_id is required or incorrect type"}')
+
     def test_param_error_patch_id_400d(self):
         url = '/report_update?patch_id=abc'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param patch_id is required or incorrect type"}')
+
     def test_param_error_patch_id_400e(self):
         url = '/report_update?patch_id=123abc'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(response.content, b'{"message":"query param patch_id is required or incorrect type"}')
+
     def test_patch_not_found(self):
         url = '/report_update?patch_id=0'
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.content, b'{"message":"patch is not found"}')
+
     def test_patch_wating(self):
         set_credentials(self.client)
 
@@ -671,8 +690,9 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patch = Patch.objects.get(id=patch["id"]) 
+        patch = Patch.objects.get(id=patch["id"])
         self.assertEqual(patch.apply_count, apply_count)
+
     def test_patch_stoped(self):
         set_credentials(self.client)
 
@@ -705,8 +725,9 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patch = Patch.objects.get(id=patch["id"]) 
+        patch = Patch.objects.get(id=patch["id"])
         self.assertEqual(patch.apply_count, apply_count)
+
     def test_patch_released(self):
         set_credentials(self.client)
 
@@ -739,8 +760,9 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patch = Patch.objects.get(id=patch["id"]) 
+        patch = Patch.objects.get(id=patch["id"])
         self.assertEqual(patch.apply_count, apply_count)
+
     def test_patch_prereleased(self):
         set_credentials(self.client)
 
@@ -773,8 +795,9 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patch = Patch.objects.get(id=patch["id"]) 
+        patch = Patch.objects.get(id=patch["id"])
         self.assertEqual(patch.apply_count, apply_count)
+
     def test_patch_deleted(self):
         set_credentials(self.client)
 
@@ -807,8 +830,9 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-        patch = Patch.objects.get(id=patch["id"]) 
+        patch = Patch.objects.get(id=patch["id"])
         self.assertEqual(patch.apply_count, apply_count)
+
     def test_patch_pool_size_default(self):
         set_credentials(self.client)
 
@@ -835,6 +859,7 @@ class CheckReportTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Patch.objects.count(), 1)
         self.assertEqual(patch["pool_size"], sys.maxsize)
+
     def test_patch_serial_number(self):
         set_credentials(self.client)
 
@@ -879,6 +904,7 @@ class CheckReportTests(APITestCase):
         patch = json.loads(response.content)
         serial_number = patch["serial_number"]
         self.assertEqual(serial_number, 4)
+
     def test_patch_status(self):
         set_credentials(self.client)
 
