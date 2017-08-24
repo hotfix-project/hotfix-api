@@ -29,7 +29,7 @@ class App(models.Model):
     id = models.AutoField(primary_key=True)
     category_id = models.ForeignKey(Category)
     system_id = models.ForeignKey(System)
-    name = models.CharField(max_length=64, null=False, unique=True)
+    name = models.CharField(max_length=64, null=False)
     key = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     secret = models.CharField(max_length=1024, null=False, default=uuid.uuid4)
     rsa = models.TextField(null=False)
@@ -37,15 +37,21 @@ class App(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        unique_together = (("category_id", "system_id", "name"),)
+
 
 class Version(models.Model):
     id = models.AutoField(primary_key=True)
     app_id = models.ForeignKey(App)
-    name = models.CharField(max_length=64, null=False, unique=True)
+    name = models.CharField(max_length=64, null=False)
     create_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = (("app_id", "name"),)
 
 
 class Patch(models.Model):
