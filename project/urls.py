@@ -25,6 +25,7 @@ from rest_framework_swagger.views import get_swagger_view
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework.authtoken import views as authviews
 from rest_auth.views import PasswordChangeView
+from django.views.generic.base import RedirectView
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -35,8 +36,11 @@ router.register(r'versions', apiviews.VersionViewSet)
 router.register(r'patchs', apiviews.PatchViewSet)
 
 schema_view = get_swagger_view(title='Hotfix API')
+favicon_view = RedirectView.as_view(url='/static/favicon.ico', permanent=True)
+
 
 urlpatterns = [
+    url(r'^favicon\.ico$', favicon_view),
     url(r'^admin/', admin.site.urls),
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
