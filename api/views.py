@@ -114,11 +114,19 @@ def report_update(request):
     if len(patchs) == 0:
         return HttpResponseNotFound('{"message":"patch is not found"}')
 
-    for patch in patchs:
-        patch.apply_count = patch.apply_count + 1
-        patch.supersave()
+    # id is primary_key
+    patchs[0].apply_count = patchs[0].apply_count + 1
+    patchs[0].supersave()
 
-    return HttpResponse('{"message":"ok"}')
+    data = {
+       "result": {
+           "id": patch_id,
+           "apply_count": patchs[0].apply_count,
+       },
+       "message": "ok",
+    }
+
+    return HttpResponse(json.dumps(data, ensure_ascii=False), content_type="application/json")
 
 
 @resthub_spec
