@@ -15,6 +15,21 @@ def store_from_redis():
             if count > patch.apply_count:
                 patch.apply_count = count
                 patch.supersave()
+            else:
+                # TODO
+                # Data inconsistency occurred, to logging
+                pass
+
+        result = rds.hget("download_count_hash", "patch_id=%d" % (patch.id))
+        if result is not None:
+            count = int(result)
+            if count > patch.download_count:
+                patch.download_count = count
+                patch.supersave()
+            else:
+                # TODO
+                # Data inconsistency occurred, to logging
+                pass
         
 
 def main():
