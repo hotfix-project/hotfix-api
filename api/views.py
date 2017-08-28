@@ -112,7 +112,7 @@ def check_update(request):
             "version": versions[0].name,
             "rsa": apps[0].rsa,
             "patch": {
-                "released": list(releases.values('id', 'download_url', 'pool_size')),
+                "released": list(releases.values('id', 'download_url', 'download_count', 'pool_size')),
                 "deleted": list(deletes.values('id')),
             }
         }
