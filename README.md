@@ -65,3 +65,9 @@ Click thumbnails to enlarge.
 
 ## Security
 Do Not expose APIs mentioned above to Internet.
+
+## Crontab
+sync hotfix-gateway data to mysql, you need enable crontab
+```
+python3.6 manage.py crontab add
+```

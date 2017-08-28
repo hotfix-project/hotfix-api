@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'rest_auth',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -185,3 +186,7 @@ CORS_ALLOW_HEADERS = (
 )
 CORS_ALLOW_CREDENTIALS = True
 APPEND_SLASH = False
+
+CRONJOBS = (
+    ('*/1 * * * *', 'api.cron.store_from_redis'),
+)
