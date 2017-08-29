@@ -394,7 +394,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
-        self.assertEqual(data["result"]["patch"]["released"][0]["download_count"], 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
 
     def test_patch_prereleased(self):
@@ -430,7 +429,6 @@ class CheckUpdateTests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertEqual(len(data["result"]["patch"]["released"]), 1)
-            self.assertEqual(data["result"]["patch"]["released"][0]["download_count"], i)
             self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
 
         url = '/check_update?app_id=%s&version=%s' % (app.id, version.name)
@@ -474,7 +472,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
-        self.assertEqual(data["result"]["patch"]["released"][0]["download_count"], 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
 
     def test_patch_prereleased_released(self):
@@ -511,7 +508,6 @@ class CheckUpdateTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data["result"]["patch"]["released"]), 1)
-        self.assertEqual(data["result"]["patch"]["released"][0]["download_count"], 0)
         self.assertEqual(len(data["result"]["patch"]["deleted"]), 0)
 
     def test_patch_deleted(self):
