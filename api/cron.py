@@ -9,7 +9,7 @@ def store_from_redis():
     rds = redis.Redis(connection_pool=pool)
 
     for patch in Patch.objects.select_for_update().all():
-        result = rds.hget("apply_count_hash", "report_update?patch_id=%d" % (patch.id))
+        result = rds.hget("apply_count_hash", "/report_update?patch_id=%d" % (patch.id))
         if result is not None:
             count = int(result)
             if count > patch.apply_count:
