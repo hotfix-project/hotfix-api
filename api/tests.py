@@ -694,7 +694,6 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             data = json.loads(response.content)
-            self.assertEqual(data["result"]["apply_count"], i+1)
             self.assertEqual(data["result"]["id"], str(patch["id"]))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"])
@@ -732,7 +731,6 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             data = json.loads(response.content)
-            self.assertEqual(data["result"]["apply_count"], i+1)
             self.assertEqual(data["result"]["id"], str(patch["id"]))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"])
@@ -770,7 +768,6 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             data = json.loads(response.content)
-            self.assertEqual(data["result"]["apply_count"], i+1)
             self.assertEqual(data["result"]["id"], str(patch["id"]))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"])
@@ -808,7 +805,6 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             data = json.loads(response.content)
-            self.assertEqual(data["result"]["apply_count"], i+1)
             self.assertEqual(data["result"]["id"], str(patch["id"]))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"])
@@ -846,7 +842,6 @@ class CheckReportTests(APITestCase):
         for i in range(apply_count):
             response = self.client.get(url)
             data = json.loads(response.content)
-            self.assertEqual(data["result"]["apply_count"], i+1)
             self.assertEqual(data["result"]["id"], str(patch["id"]))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
         patch = Patch.objects.get(id=patch["id"])

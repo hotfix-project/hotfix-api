@@ -151,7 +151,6 @@ def report_update(request):
     data = {
        "result": {
            "id": patch_id,
-           "apply_count": patchs[0].apply_count,
        },
        "message": "ok",
     }
