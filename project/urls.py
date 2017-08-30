@@ -48,8 +48,6 @@ urlpatterns = [
     url(r'^swagger/$', schema_view),
     url(r'^check_update$', apiviews.check_update),
     url(r'^report_update$', apiviews.report_update),
-    url(r'^custom_check_update$', apiviews.custom_check_update),
-    url(r'^custom_report_update$', apiviews.custom_report_update),
     url(r'^qrcode/(.+)$', toolsviews.generate_qrcode),
     url(r'^password/change$', PasswordChangeView.as_view(), name='rest_password_change'),
 ]
