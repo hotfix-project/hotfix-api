@@ -74,6 +74,7 @@ class Patch(models.Model):
     desc = models.CharField(max_length=1024, null=False)
     serial_number = models.IntegerField(default=1)
     download_url = models.URLField(null=False)
+    md5sum = models.CharField(max_length=32, default="")
     size = models.IntegerField(null=False)
     create_time = models.DateTimeField(auto_now_add=True)
     update_time = models.DateTimeField(auto_now=True)

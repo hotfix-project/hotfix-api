@@ -44,7 +44,7 @@ class VersionAdmin(admin.ModelAdmin):
 
 class PatchAdmin(admin.ModelAdmin):
     fields = [
-        'version_id', 'size', 'desc', 'download_url',
+        'version_id', 'size', 'desc', 'download_url', 'md5sum',
         'serial_number', 'status', 'download_count',
         'apply_count', 'pool_size'
     ]

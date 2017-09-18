@@ -31,7 +31,7 @@ class PatchSerializer(serializers.HyperlinkedModelSerializer):
         model = Patch
         fields = (
             'id', 'version_id', 'size', 'desc',
-            'download_url', 'serial_number',
+            'download_url', 'md5sum', 'serial_number',
             'status', 'download_count', 'apply_count',
             'pool_size', 'create_time',
         )
