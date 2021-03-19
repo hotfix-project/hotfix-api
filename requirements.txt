@@ -9,7 +9,7 @@ django-crontab==0.7.1
 django-filter==1.0.4
 django-rest-auth==0.9.1
 django-rest-swagger==2.1.2
-djangorestframework==3.6.3
+djangorestframework==3.11.2
 gevent==1.2.2
 greenlet==0.4.12
 gunicorn==19.7.1
