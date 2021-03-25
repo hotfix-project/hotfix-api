@@ -26,7 +26,7 @@ Pillow==4.2.1
 Pygments==2.2.0
 python-coveralls==2.9.1
 pytz==2017.2
-PyYAML==3.12
+PyYAML==5.4
 qrcode==5.3
 redis==2.10.6
 requests==2.18.4
